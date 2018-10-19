@@ -1,36 +1,27 @@
 package com.example.arsalan.last_pic;
 
+import android.Manifest;
 import android.app.Activity;
-import android.graphics.Bitmap;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.os.Bundle;
-import android.provider.ContactsContract;
+import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.text.method.Touch;
-import android.util.Log;
-import android.view.Display;
 import android.view.MotionEvent;
-import android.view.View;
 import android.widget.ImageView;
-import android.widget.MultiAutoCompleteTextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.FutureTarget;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 
 public class ImageViewer extends AppCompatActivity {
+
+    private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 1;
 
     private String red = "http://static.hasselblad.com/2016/12/B9403385.jpg";
     private String blue = "http://2.bp.blogspot.com/-GOzVqR_p_ww/VDwWnsJhrNI/AAAAAAAAAH0/U3m5yEhSgj4/s1600/Kajal-Agarwal-HD-Wallpaper-.jpg";
@@ -51,16 +42,16 @@ public class ImageViewer extends AppCompatActivity {
 
         imageView = findViewById(R.id.imageview);
 
-        // Write a message to the database
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("photos_url");
+        requestRead();
 
+        // Write a message to the database
+        //FirebaseDatabase database = FirebaseDatabase.getInstance();
+        //DatabaseReference myRef = database.getReference("photos_url");
 
 //        myRef.push().setValue(red);
 //        myRef.push().setValue(blue);
 //        myRef.push().setValue(yellow);
-
-
+        /*
         // Attach a listener to read the data at our posts reference
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -80,7 +71,27 @@ public class ImageViewer extends AppCompatActivity {
                 System.out.println("The read failed: " + databaseError.getCode());
             }
         });
+        */
 
+
+        final String[] imageColumns = { MediaStore.Images.Media._ID, MediaStore.Images.Media.DATA };
+        final String imageOrderBy = MediaStore.Images.Media._ID + " DESC";
+        Cursor imageCursor = managedQuery(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, imageColumns, null, null, imageOrderBy);
+        imageCursor.moveToFirst();
+        do {
+            String fullPath = imageCursor.getString(imageCursor.getColumnIndex(MediaStore.Images.Media.DATA));
+            if (fullPath.contains("DCIM")) {
+                //--last image from camera --
+
+                Glide.with(this)
+                        .load(fullPath)
+                        .into(imageView);
+
+                showToast(fullPath);
+                return;
+            }
+        }
+        while (imageCursor.moveToNext());
     }
 
     private void hideBar() {
@@ -108,11 +119,11 @@ public class ImageViewer extends AppCompatActivity {
                 // reverse direction of rotation above the mid-line
                 if (x >= getWidth() / 2) {
                    showToast("Touch on left");
-                   changeImage(1);
+                   //changeImage(1);
                 }
                 else {
                     showToast("Touch on right");
-                    changeImage(-1);
+                   //changeImage(-1);
                 }
 
 
@@ -137,4 +148,35 @@ public class ImageViewer extends AppCompatActivity {
                 .load(images.get(index))
                 .into(imageView);
     }
+
+
+    public void requestRead() {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                    MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+        } else {
+            //readImage();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+
+        if (requestCode == MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                //readFile();
+            } else {
+                // Permission Denied
+                Toast.makeText(ImageViewer.this, "Permission Denied", Toast.LENGTH_SHORT).show();
+            }
+            return;
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+
 }
