@@ -164,7 +164,4 @@ public class mainScreen extends AppCompatActivity {
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
     }
 
-    private void loadImages(){
-
-    }
 }
