@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "416804506102",
+    "firebase_url": "https://lastpic-17062018.firebaseio.com",
+    "project_id": "lastpic-17062018",
+    "storage_bucket": "lastpic-17062018.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:416804506102:android:f1ef77308a808262",
+        "android_client_info": {
+          "package_name": "com.example.arsalan.last_pic"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "416804506102-98nl0h5fa16svaimndtiu0huaq2hord6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.arsalan.last_pic",
+            "certificate_hash": "d64a3e2de816399a8dbce3f270233fe1f6d04115"
+          }
+        },
+        {
+          "client_id": "416804506102-0tpi89sp3a7h0q8j8ie5f743alms1pr3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD-8z3OjW3fA-Cb08dgJPQ9MLND_eOSCpw"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "416804506102-0tpi89sp3a7h0q8j8ie5f743alms1pr3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

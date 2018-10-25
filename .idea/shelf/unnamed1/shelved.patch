@@ -1,0 +1,17 @@
+Index: app/src/main/java/com/example/arsalan/last_pic/RunTimePermission.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.arsalan.last_pic;\n\nimport android.content.Intent;\nimport android.content.pm.PackageManager;\nimport android.os.Bundle;\nimport android.support.annotation.Nullable;\nimport android.support.v4.app.ActivityCompat;\nimport android.support.v4.content.ContextCompat;\nimport android.support.v7.app.AppCompatActivity;\nimport android.widget.ImageView;\nimport android.widget.Toast;\n\n\npublic abstract class RunTimePermission extends AppCompatActivity {\n\n    @Override\n    protected void onCreate(@Nullable Bundle savedInstanceState) {\n        super.onCreate(savedInstanceState);\n\n    }\n\n    @Override\n    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {\n        super.onRequestPermissionsResult(requestCode, permissions, grantResults);\n        int permissionCheck = PackageManager.PERMISSION_GRANTED;\n        for (int permission : grantResults) {\n            permissionCheck = permissionCheck + permission;\n        }\n        if ((grantResults.length > 0) && permissionCheck == PackageManager.PERMISSION_GRANTED) {\n            onPermissionsGranted(requestCode);\n        } else {\n            Toast.makeText(this, \"Permissions denied\", Toast.LENGTH_LONG).show();\n        }\n    }\n\n    public void requestAppPermissions(final String[] permissions, final int requestCode) {\n        int permissionCheck = PackageManager.PERMISSION_GRANTED;\n        boolean shouldShowRequestPermissionRationale = false;\n        for (String permission : permissions){\n\n            permissionCheck = permissionCheck + ContextCompat.checkSelfPermission(this, permission);\n            shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale ||\n                    ActivityCompat.shouldShowRequestPermissionRationale(this, permission);\n\n            if (permissionCheck != PackageManager.PERMISSION_GRANTED) {\n                if (shouldShowRequestPermissionRationale) {\n                    Toast.makeText(RunTimePermission.this, \"We need %s to make this app work\", Toast.LENGTH_SHORT).show();\n                } else {\n                    ActivityCompat.requestPermissions(this, permissions, requestCode);\n                }\n            } else {\n                onPermissionsGranted(requestCode);\n            }\n        }\n\n    }\n\n    public void onPermissionsGranted(final int requestCode) {\n        Toast.makeText(this, \"Permissions Received.\", Toast.LENGTH_LONG).show();\n        Intent myIntent = new Intent(RunTimePermission.this, ImageViewer.class);\n        finish();\n        RunTimePermission.this.startActivity(myIntent);\n\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/example/arsalan/last_pic/RunTimePermission.java	(revision d5227f2cc90d17f26a9e77fc0a286cec8ec8c1a1)
++++ app/src/main/java/com/example/arsalan/last_pic/RunTimePermission.java	(date 1540477469000)
+@@ -7,7 +7,6 @@
+ import android.support.v4.app.ActivityCompat;
+ import android.support.v4.content.ContextCompat;
+ import android.support.v7.app.AppCompatActivity;
+-import android.widget.ImageView;
+ import android.widget.Toast;
+ 
+ 

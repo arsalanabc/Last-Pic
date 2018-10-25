@@ -1,13 +1,12 @@
 package com.example.arsalan.last_pic;
 
-import android.Manifest;
 import android.app.Activity;
-import android.content.pm.PackageManager;
+import android.app.ProgressDialog;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
+import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
@@ -15,8 +14,16 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 
 public class ImageViewer extends AppCompatActivity {
@@ -29,7 +36,8 @@ public class ImageViewer extends AppCompatActivity {
     public int image_length;
     private ImageView imageView;
     private Activity that;
-
+    private StorageReference storageReference;
+    private FirebaseDatabase firebaseDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -39,6 +47,10 @@ public class ImageViewer extends AppCompatActivity {
         that = this;
 
         imageView = findViewById(R.id.imageview);
+
+        //Firebase
+        firebaseDatabase = FirebaseDatabase.getInstance().getReference("photos_url").getDatabase();
+        storageReference = FirebaseStorage.getInstance().getReference();
 
         //requestRead();
 
@@ -80,6 +92,8 @@ public class ImageViewer extends AppCompatActivity {
             String fullPath = imageCursor.getString(imageCursor.getColumnIndex(MediaStore.Images.Media.DATA));
             if (fullPath.contains("DCIM")) {
                 //--last image from camera --
+
+                uploadImage(Uri.parse(fullPath ));
 
                 Glide.with(this)
                         .load(fullPath)
@@ -134,7 +148,6 @@ public class ImageViewer extends AppCompatActivity {
         return this.getWindowManager().getDefaultDisplay().getWidth();
     }
 
-
     public void showToast(String msg){
         Toast.makeText(getApplicationContext(),msg,Toast.LENGTH_SHORT).show();
     }
@@ -147,34 +160,39 @@ public class ImageViewer extends AppCompatActivity {
                 .into(imageView);
     }
 
-//
-//    public void requestRead() {
-//        if (ContextCompat.checkSelfPermission(this,
-//                Manifest.permission.READ_EXTERNAL_STORAGE)
-//                != PackageManager.PERMISSION_GRANTED) {
-//
-//            ActivityCompat.requestPermissions(this,
-//                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-//                    MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
-//        } else {
-//            //readImage();
-//        }
-//    }
-//
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-//
-//        if (requestCode == MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE) {
-//            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//                //readFile();
-//            } else {
-//                // Permission Denied
-//                Toast.makeText(ImageViewer.this, "Permission Denied", Toast.LENGTH_SHORT).show();
-//            }
-//            return;
-//        }
-//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-//    }
 
+    private void uploadImage(Uri filePath) {
 
+        if(filePath != null)
+        {
+            final ProgressDialog progressDialog = new ProgressDialog(this);
+            progressDialog.setTitle("Uploading...");
+            progressDialog.show();
+
+            StorageReference ref = storageReference.child("images/"+ UUID.randomUUID().toString());
+            ref.putFile(filePath)
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            progressDialog.dismiss();
+                            Toast.makeText(ImageViewer.this, "Uploaded", Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            progressDialog.dismiss();
+                            Toast.makeText(ImageViewer.this, "Failed "+e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                            double progress = (100.0*taskSnapshot.getBytesTransferred()/taskSnapshot
+                                    .getTotalByteCount());
+                            progressDialog.setMessage("Uploaded "+(int)progress+"%");
+                        }
+                    });
+        }
+    }
 }
