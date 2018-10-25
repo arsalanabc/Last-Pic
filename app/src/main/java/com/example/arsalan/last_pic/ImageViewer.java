@@ -3,6 +3,7 @@ package com.example.arsalan.last_pic;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.database.Cursor;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -10,20 +11,27 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.UUID;
+import java.util.function.Consumer;
+
+import id.zelory.compressor.Compressor;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 
 public class ImageViewer extends AppCompatActivity {
@@ -36,8 +44,9 @@ public class ImageViewer extends AppCompatActivity {
     public int image_length;
     private ImageView imageView;
     private Activity that;
+    private FirebaseStorage storage = FirebaseStorage.getInstance();
     private StorageReference storageReference;
-    private FirebaseDatabase firebaseDatabase;
+    //private FirebaseDatabase firebaseDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -49,7 +58,7 @@ public class ImageViewer extends AppCompatActivity {
         imageView = findViewById(R.id.imageview);
 
         //Firebase
-        firebaseDatabase = FirebaseDatabase.getInstance().getReference("photos_url").getDatabase();
+        //firebaseDatabase = FirebaseDatabase.getInstance().getReference("photos_url").getDatabase();
         storageReference = FirebaseStorage.getInstance().getReference();
 
         //requestRead();
@@ -93,7 +102,7 @@ public class ImageViewer extends AppCompatActivity {
             if (fullPath.contains("DCIM")) {
                 //--last image from camera --
 
-                uploadImage(Uri.parse(fullPath ));
+                uploadImage(fullPath);
 
                 Glide.with(this)
                         .load(fullPath)
@@ -161,7 +170,35 @@ public class ImageViewer extends AppCompatActivity {
     }
 
 
-    private void uploadImage(Uri filePath) {
+    private void uploadImage(String imagePath) throws IOException {
+
+        Uri filePath = Uri.fromFile(new File(imagePath));
+
+        //
+        //// Create a storage reference from our app
+        //StorageReference storageRef = storage.getReference();
+        //StorageReference riversRef = storageRef.child("images/"+file.getLastPathSegment());
+        //uploadTask = riversRef.putFile(file);
+        //
+        //// Register observers to listen for when the download is done or if it fails
+        //uploadTask.addOnFailureListener(new OnFailureListener() {
+        //@Override
+        //public void onFailure(@NonNull Exception exception) {
+        //// Handle unsuccessful uploads
+        //}
+        //}).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+        //@Override
+        //public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+        //// taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
+        //// ...
+        //}
+        //});
+        //
+        //
+        File actualImageFile = new File(filePath.getPath());
+        File compressedImageFile = new Compressor(this).compressToFile(actualImageFile);
+
+
 
         if(filePath != null)
         {
@@ -195,4 +232,5 @@ public class ImageViewer extends AppCompatActivity {
                     });
         }
     }
+
 }
