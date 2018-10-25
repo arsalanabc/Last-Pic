@@ -21,8 +21,6 @@ import java.util.ArrayList;
 
 public class ImageViewer extends AppCompatActivity {
 
-    private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 1;
-
     private String red = "http://static.hasselblad.com/2016/12/B9403385.jpg";
     private String blue = "http://2.bp.blogspot.com/-GOzVqR_p_ww/VDwWnsJhrNI/AAAAAAAAAH0/U3m5yEhSgj4/s1600/Kajal-Agarwal-HD-Wallpaper-.jpg";
     private String yellow = "http://static.hasselblad.com/2016/10/anders-X1D-sample1.jpg";
@@ -42,7 +40,7 @@ public class ImageViewer extends AppCompatActivity {
 
         imageView = findViewById(R.id.imageview);
 
-        requestRead();
+        //requestRead();
 
         // Write a message to the database
         //FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -149,34 +147,34 @@ public class ImageViewer extends AppCompatActivity {
                 .into(imageView);
     }
 
-
-    public void requestRead() {
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.READ_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                    MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
-        } else {
-            //readImage();
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-
-        if (requestCode == MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                //readFile();
-            } else {
-                // Permission Denied
-                Toast.makeText(ImageViewer.this, "Permission Denied", Toast.LENGTH_SHORT).show();
-            }
-            return;
-        }
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-    }
+//
+//    public void requestRead() {
+//        if (ContextCompat.checkSelfPermission(this,
+//                Manifest.permission.READ_EXTERNAL_STORAGE)
+//                != PackageManager.PERMISSION_GRANTED) {
+//
+//            ActivityCompat.requestPermissions(this,
+//                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+//                    MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+//        } else {
+//            //readImage();
+//        }
+//    }
+//
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+//
+//        if (requestCode == MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE) {
+//            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                //readFile();
+//            } else {
+//                // Permission Denied
+//                Toast.makeText(ImageViewer.this, "Permission Denied", Toast.LENGTH_SHORT).show();
+//            }
+//            return;
+//        }
+//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+//    }
 
 
 }

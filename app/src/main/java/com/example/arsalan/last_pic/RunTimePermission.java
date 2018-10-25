@@ -1,11 +1,13 @@
 package com.example.arsalan.last_pic;
 
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 
@@ -46,12 +48,18 @@ public abstract class RunTimePermission extends AppCompatActivity {
                 } else {
                     ActivityCompat.requestPermissions(this, permissions, requestCode);
                 }
+            } else {
+                onPermissionsGranted(requestCode);
             }
         }
 
     }
 
-    public void onPermissionsGranted (int requectCode) {
+    public void onPermissionsGranted(final int requestCode) {
         Toast.makeText(this, "Permissions Received.", Toast.LENGTH_LONG).show();
+        Intent myIntent = new Intent(RunTimePermission.this, ImageViewer.class);
+        finish();
+        RunTimePermission.this.startActivity(myIntent);
+
     }
 }
