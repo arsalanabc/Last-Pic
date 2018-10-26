@@ -3,7 +3,6 @@ package com.example.arsalan.last_pic;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.database.Cursor;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -11,7 +10,6 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -27,18 +25,17 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.UUID;
-import java.util.function.Consumer;
 
 import id.zelory.compressor.Compressor;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
+
+//import io.reactivex.android.schedulers..AndroidSchedulers;
 
 
 public class ImageViewer extends AppCompatActivity {
 
-    private String red = "http://static.hasselblad.com/2016/12/B9403385.jpg";
-    private String blue = "http://2.bp.blogspot.com/-GOzVqR_p_ww/VDwWnsJhrNI/AAAAAAAAAH0/U3m5yEhSgj4/s1600/Kajal-Agarwal-HD-Wallpaper-.jpg";
-    private String yellow = "http://static.hasselblad.com/2016/10/anders-X1D-sample1.jpg";
+//    private String red = "http://static.hasselblad.com/2016/12/B9403385.jpg";
+//    private String blue = "http://2.bp.blogspot.com/-GOzVqR_p_ww/VDwWnsJhrNI/AAAAAAAAAH0/U3m5yEhSgj4/s1600/Kajal-Agarwal-HD-Wallpaper-.jpg";
+//    private String yellow = "http://static.hasselblad.com/2016/10/anders-X1D-sample1.jpg";
     public ArrayList<String> images = new ArrayList<>();
     private int index = 0;
     public int image_length;
@@ -92,7 +89,6 @@ public class ImageViewer extends AppCompatActivity {
         });
         */
 
-
         final String[] imageColumns = { MediaStore.Images.Media._ID, MediaStore.Images.Media.DATA };
         final String imageOrderBy = MediaStore.Images.Media._ID + " DESC";
         Cursor imageCursor = managedQuery(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, imageColumns, null, null, imageOrderBy);
@@ -102,7 +98,14 @@ public class ImageViewer extends AppCompatActivity {
             if (fullPath.contains("DCIM")) {
                 //--last image from camera --
 
-                uploadImage(fullPath);
+//                try {
+//                    uploadImage(fullPath);
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+
+                ImageUploader imageUploader = new ImageUploader(fullPath, this);
+                imageUploader.execute(Uri.fromFile(new File(fullPath)));
 
                 Glide.with(this)
                         .load(fullPath)
