@@ -23,8 +23,8 @@ import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.UUID;
@@ -126,7 +126,7 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
             scaleMatrix.setScale(ratioX, ratioY, middleX, middleY);
 
             Canvas canvas;
-            if (scaledBitmap != null) {
+            if (scaledBitmap != null ) {
                 canvas = new Canvas(scaledBitmap);
                 canvas.setMatrix(scaleMatrix);
                 canvas.drawBitmap(bmp, middleX - bmp.getWidth() / 2, middleY - bmp.getHeight() / 2, new Paint(Paint.FILTER_BITMAP_FLAG));
@@ -158,20 +158,20 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
             }
             FileOutputStream out;
 
-            try {
-                out = new FileOutputStream(filename);
-                if (scaledBitmap != null) {
-                    scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 80, out);
-                }
+            //out = new FileOutputStream(filename);
+            if (scaledBitmap != null) {
 
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
+                ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+                scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 80, bytes);
+                String path = MediaStore.Images.Media.insertImage(activity.getContentResolver(), scaledBitmap, "Title", null);
+                return Uri.parse(path).toString();
             }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return filename;
+        return null;
     }
 
     private static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
@@ -210,28 +210,6 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
 
         //Uri filePath = Uri.fromFile(imagePath);
         Uri filePath = Uri.parse(imagePath);
-
-        //
-        //// Create a storage reference from our app
-        //StorageReference storageRef = storage.getReference();
-        //StorageReference riversRef = storageRef.child("images/"+file.getLastPathSegment());
-        //uploadTask = riversRef.putFile(file);
-        //
-        //// Register observers to listen for when the download is done or if it fails
-        //uploadTask.addOnFailureListener(new OnFailureListener() {
-        //@Override
-        //public void onFailure(@NonNull Exception exception) {
-        //// Handle unsuccessful uploads
-        //}
-        //}).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-        //@Override
-        //public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-        //// taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
-        //// ...
-        //}
-        //});
-        //
-        //
         StorageReference storageReference = FirebaseStorage.getInstance().getReference();
 
 
@@ -250,19 +228,18 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
                             Toast.makeText(activity, "Uploaded", Toast.LENGTH_SHORT).show();
                         }
                     })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            progressDialog.dismiss();
-                            Toast.makeText(activity, "Failed "+e.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    })
                     .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
                             double progress = (100.0*taskSnapshot.getBytesTransferred()/taskSnapshot
                                     .getTotalByteCount());
                             progressDialog.setMessage("Uploaded "+(int)progress+"%");
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            progressDialog.dismiss();
+                            Toast.makeText(activity, "Failed "+e.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     });
         }
