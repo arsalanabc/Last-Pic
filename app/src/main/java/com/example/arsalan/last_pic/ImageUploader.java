@@ -45,6 +45,7 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
         this.activity = activity;
 
     }
+
     @Override
     protected String doInBackground(Uri... uris) {
         Log.d("Doing the onBackground", "do");
@@ -67,7 +68,6 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
     }
 
     public static String compressImage(String imageUri, Activity activity) {
-        String filename = "file:///storage/emulated/0/DCIM/Camera/compressed.jpg";
         try {
             String filePath = getRealPathFromURI(imageUri, activity);
 
@@ -232,7 +232,7 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
                             DatabaseReference myRef = database.getReference("photos_url");
                             myRef.push().setValue(taskSnapshot.getDownloadUrl().toString());
 
-                            Toast.makeText(activity, "Uploaded", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(activity, "Uploaded:"+taskSnapshot.getDownloadUrl().toString(), Toast.LENGTH_SHORT).show();
                         }
                     })
                     .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {

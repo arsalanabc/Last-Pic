@@ -9,13 +9,20 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
@@ -41,9 +48,10 @@ public class ImageViewer extends AppCompatActivity {
     public int image_length;
     private ImageView imageView;
     private Activity that;
-    private FirebaseStorage storage = FirebaseStorage.getInstance();
     private StorageReference storageReference;
-    //private FirebaseDatabase firebaseDatabase;
+    private DatabaseReference firebaseDatabase;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -55,39 +63,12 @@ public class ImageViewer extends AppCompatActivity {
         imageView = findViewById(R.id.imageview);
 
         //Firebase
-        //firebaseDatabase = FirebaseDatabase.getInstance().getReference("photos_url").getDatabase();
+        firebaseDatabase = FirebaseDatabase.getInstance().getReference().child("photos_url");
         storageReference = FirebaseStorage.getInstance().getReference();
 
-        //requestRead();
+        fetchImagesFromFirebase();
+        Log.d("info", "images list:"+images.toString());
 
-        // Write a message to the database
-        //FirebaseDatabase database = FirebaseDatabase.getInstance();
-        //DatabaseReference myRef = database.getReference("photos_url");
-
-//        myRef.push().setValue(red);
-//        myRef.push().setValue(blue);
-//        myRef.push().setValue(yellow);
-        /*
-        // Attach a listener to read the data at our posts reference
-        myRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot data : dataSnapshot.getChildren()) {
-                    String image = data.getValue().toString();
-                    Log.d("images updated", "Image: " + image);
-                    images.add(image);
-                    image_length += 1;
-                }
-
-            }
-
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                System.out.println("The read failed: " + databaseError.getCode());
-            }
-        });
-        */
 
         final String[] imageColumns = { MediaStore.Images.Media._ID, MediaStore.Images.Media.DATA };
         final String imageOrderBy = MediaStore.Images.Media._ID + " DESC";
@@ -96,26 +77,16 @@ public class ImageViewer extends AppCompatActivity {
         do {
             String fullPath = imageCursor.getString(imageCursor.getColumnIndex(MediaStore.Images.Media.DATA));
             if (fullPath.contains("DCIM")) {
-                //--last image from camera --
-
-//                try {
-//                    uploadImage(fullPath);
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-
                 ImageUploader imageUploader = new ImageUploader(fullPath, this);
                 imageUploader.execute(Uri.fromFile(new File(fullPath)));
-
-                Glide.with(this)
-                        .load(fullPath)
-                        .into(imageView);
-
                 showToast(fullPath);
                 return;
             }
         }
         while (imageCursor.moveToNext());
+
+
+
     }
 
     private void hideBar() {
@@ -143,11 +114,11 @@ public class ImageViewer extends AppCompatActivity {
                 // reverse direction of rotation above the mid-line
                 if (x >= getWidth() / 2) {
                    showToast("Touch on left");
-                   //changeImage(1);
+                   changeImage(1);
                 }
                 else {
                     showToast("Touch on right");
-                   //changeImage(-1);
+                   changeImage(-1);
                 }
 
 
@@ -165,11 +136,15 @@ public class ImageViewer extends AppCompatActivity {
     }
 
     public void changeImage(int ind){
-        index = Math.max(index + ind, 0);
-        //Log.d("images updated", " Current Image: " + images.get(index));
-        Glide.with(this)
-                .load(images.get(index))
-                .into(imageView);
+        int imageCount = images.size()-1;
+
+        index += ind;
+        index = Math.max(0, index);
+        index = Math.min(index, imageCount);
+
+
+        displayImages();
+
     }
 
 
@@ -235,5 +210,46 @@ public class ImageViewer extends AppCompatActivity {
                     });
         }
     }
+
+    public void fetchImagesFromFirebase() {
+
+        firebaseDatabase.addValueEventListener(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                for (DataSnapshot userSnapshot: dataSnapshot.getChildren()) {
+                    String url = userSnapshot.getValue().toString();
+                    Log.d("info", "dataSnapshot:" + url);
+                    images.add(url);
+                }
+
+            Log.d("fb call" , images.toString());
+                displayImages();
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+    private void displayImages() {
+        showToast("showing image");
+        RequestOptions options = new RequestOptions()
+                .placeholder(R.mipmap.ic_launcher_round)
+                .error(R.mipmap.ic_launcher_round);
+
+        GlideApp.with(this)
+                .load(images.get(index))
+                .transition(DrawableTransitionOptions.withCrossFade())
+                .apply(options)
+                .dontAnimate()
+                .into(imageView);
+    }
+
 
 }
