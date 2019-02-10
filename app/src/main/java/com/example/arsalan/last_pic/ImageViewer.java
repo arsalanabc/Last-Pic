@@ -1,39 +1,30 @@
 package com.example.arsalan.last_pic;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.ImageView;
-import android.widget.Toast;
 
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestOptions;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.UUID;
-
-import id.zelory.compressor.Compressor;
 
 //import io.reactivex.android.schedulers..AndroidSchedulers;
 
@@ -50,6 +41,7 @@ public class ImageViewer extends AppCompatActivity {
     private Activity that;
     private StorageReference storageReference;
     private DatabaseReference firebaseDatabase;
+    public boolean upload_image = true;
 
 
 
@@ -77,8 +69,16 @@ public class ImageViewer extends AppCompatActivity {
         do {
             String fullPath = imageCursor.getString(imageCursor.getColumnIndex(MediaStore.Images.Media.DATA));
             if (fullPath.contains("DCIM")) {
-                ImageUploader imageUploader = new ImageUploader(fullPath, this);
-                imageUploader.execute(Uri.fromFile(new File(fullPath)));
+                if(upload_image) {
+                    ImageUploader imageUploader = new ImageUploader(fullPath, this);
+                    imageUploader.execute(Uri.fromFile(new File(fullPath)));
+
+                    if(imageUploader.getStatus() == AsyncTask.Status.FINISHED){
+                        upload_image = false;
+                    }
+                }
+
+
                 showToast(fullPath);
                 return;
             }
@@ -132,7 +132,7 @@ public class ImageViewer extends AppCompatActivity {
     }
 
     public void showToast(String msg){
-        Toast.makeText(getApplicationContext(),msg,Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getApplicationContext(),msg,Toast.LENGTH_SHORT).show();
     }
 
     public void changeImage(int ind){
@@ -147,69 +147,6 @@ public class ImageViewer extends AppCompatActivity {
 
     }
 
-
-    private void uploadImage(String imagePath) throws IOException {
-
-        Uri filePath = Uri.fromFile(new File(imagePath));
-
-        //
-        //// Create a storage reference from our app
-        //StorageReference storageRef = storage.getReference();
-        //StorageReference riversRef = storageRef.child("images/"+file.getLastPathSegment());
-        //uploadTask = riversRef.putFile(file);
-        //
-        //// Register observers to listen for when the download is done or if it fails
-        //uploadTask.addOnFailureListener(new OnFailureListener() {
-        //@Override
-        //public void onFailure(@NonNull Exception exception) {
-        //// Handle unsuccessful uploads
-        //}
-        //}).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-        //@Override
-        //public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-        //// taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
-        //// ...
-        //}
-        //});
-        //
-        //
-        File actualImageFile = new File(filePath.getPath());
-        File compressedImageFile = new Compressor(this).compressToFile(actualImageFile);
-
-
-
-        if(filePath != null)
-        {
-            final ProgressDialog progressDialog = new ProgressDialog(this);
-            progressDialog.setTitle("Uploading...");
-            progressDialog.show();
-
-            StorageReference ref = storageReference.child("images/"+ UUID.randomUUID().toString());
-            ref.putFile(filePath)
-                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            progressDialog.dismiss();
-                            Toast.makeText(ImageViewer.this, "Uploaded", Toast.LENGTH_SHORT).show();
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            progressDialog.dismiss();
-                            Toast.makeText(ImageViewer.this, "Failed "+e.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    })
-                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                            double progress = (100.0*taskSnapshot.getBytesTransferred()/taskSnapshot
-                                    .getTotalByteCount());
-                            progressDialog.setMessage("Uploaded "+(int)progress+"%");
-                        }
-                    });
-        }
-    }
 
     public void fetchImagesFromFirebase() {
 
@@ -240,14 +177,15 @@ public class ImageViewer extends AppCompatActivity {
     private void displayImages() {
         showToast("showing image");
         RequestOptions options = new RequestOptions()
-                .placeholder(R.mipmap.ic_launcher_round)
-                .error(R.mipmap.ic_launcher_round);
+                .placeholder(R.drawable.loading);
 
-        GlideApp.with(this)
+        GlideApp.with(getApplicationContext())
                 .load(images.get(index))
                 .transition(DrawableTransitionOptions.withCrossFade())
-                .apply(options)
-                .dontAnimate()
+                //.apply(options)
+                //.dontAnimate()
+                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                .centerCrop()
                 .into(imageView);
     }
 

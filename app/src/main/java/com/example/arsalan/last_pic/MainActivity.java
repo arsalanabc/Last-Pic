@@ -17,6 +17,8 @@ public class MainActivity extends RunTimePermission {
         MainActivity.super.requestAppPermissions(permissions,
                         REQUEST_PERMISSIONS);
 
+        finish();
+
     }
 
 }

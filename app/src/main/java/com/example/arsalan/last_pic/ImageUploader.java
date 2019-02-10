@@ -57,12 +57,8 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
 
     @Override
     protected void onPostExecute(String result) {
-        // execution of result of Long time consuming operation
-        try {
-                    uploadImage(result);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+
+        uploadImage(result);
         Log.d("filename in compressor", result);
 
     }
@@ -208,7 +204,7 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
         }
     }
 
-    private void uploadImage(String imagePath) throws IOException {
+    private void uploadImage(String imagePath) {
 
         //Uri filePath = Uri.fromFile(imagePath);
         Uri filePath = Uri.parse(imagePath);
@@ -231,8 +227,7 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
                             FirebaseDatabase database = FirebaseDatabase.getInstance();
                             DatabaseReference myRef = database.getReference("photos_url");
                             myRef.push().setValue(taskSnapshot.getDownloadUrl().toString());
-
-                            Toast.makeText(activity, "Uploaded:"+taskSnapshot.getDownloadUrl().toString(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(activity, "Uploaded:", Toast.LENGTH_SHORT).show();
                         }
                     })
                     .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
