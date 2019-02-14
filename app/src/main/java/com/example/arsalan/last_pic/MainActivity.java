@@ -2,6 +2,9 @@ package com.example.arsalan.last_pic;
 
 import android.Manifest;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.view.View;
+import android.widget.Button;
 
 public class MainActivity extends RunTimePermission {
 
@@ -12,13 +15,28 @@ public class MainActivity extends RunTimePermission {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        permissions = new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE };
+        setContentView(R.layout.main_screen);
 
-        MainActivity.super.requestAppPermissions(permissions,
+        Button getStarted_btn = findViewById(R.id.dummy_button);
+
+        hideBar();
+
+        getStarted_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                permissions = new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE };
+                MainActivity.super.requestAppPermissions(permissions,
                         REQUEST_PERMISSIONS);
+                finish();
+            }
+        });
+    }
 
-        finish();
-
+    private void hideBar() {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.hide();
+        }
     }
 
 }

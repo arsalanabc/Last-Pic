@@ -26,8 +26,6 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.UUID;
 
@@ -35,12 +33,10 @@ import static android.net.Uri.parse;
 
 public class ImageUploader extends AsyncTask <Uri, Integer , String> {
     String filePath;
-    File originalImage;
-    File compressedImage;
     String compressedPath;
     Activity activity;
 
-    public ImageUploader(String filePath, Activity activity){
+    ImageUploader(String filePath, Activity activity){
         this.filePath = filePath;
         this.activity = activity;
 
@@ -62,7 +58,6 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
         Log.d("filename in compressor", result);
 
     }
-
     public static String compressImage(String imageUri, Activity activity) {
         try {
             String filePath = getRealPathFromURI(imageUri, activity);
@@ -75,8 +70,8 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
 
             int actualHeight = options.outHeight;
             int actualWidth = options.outWidth;
-            float maxHeight = 816.0f;
-            float maxWidth = 612.0f;
+            float maxHeight = actualHeight * 0.7f; //4032f;
+            float maxWidth =  actualWidth * 0.7f; //4032f;
             float imgRatio = actualWidth / actualHeight;
             float maxRatio = maxWidth / maxHeight;
 
@@ -130,7 +125,6 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
                 canvas.drawBitmap(bmp, middleX - bmp.getWidth() / 2, middleY - bmp.getHeight() / 2, new Paint(Paint.FILTER_BITMAP_FLAG));
             }
 
-
             ExifInterface exif;
             try {
                 exif = new ExifInterface(filePath);
@@ -140,13 +134,10 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
                 Matrix matrix = new Matrix();
                 if (orientation == 6) {
                     matrix.postRotate(90);
-
                 } else if (orientation == 3) {
                     matrix.postRotate(180);
-
                 } else if (orientation == 8) {
                     matrix.postRotate(270);
-
                 }
                 if (scaledBitmap != null) {
                     scaledBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix, true);
@@ -154,13 +145,10 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            FileOutputStream out;
 
-            //out = new FileOutputStream(filename);
             if (scaledBitmap != null) {
-
                 ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-                scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 80, bytes);
+                scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
                 String path = MediaStore.Images.Media.insertImage(activity.getContentResolver(), scaledBitmap, "Title", null);
                 return Uri.parse(path).toString();
             }
@@ -188,7 +176,6 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
         while (totalPixels / (inSampleSize * inSampleSize) > totalReqPixelsCap) {
             inSampleSize++;
         }
-
         return inSampleSize;
     }
 
@@ -205,15 +192,13 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
     }
 
     private void uploadImage(String imagePath) {
-
-        //Uri filePath = Uri.fromFile(imagePath);
         Uri filePath = Uri.parse(imagePath);
         StorageReference storageReference = FirebaseStorage.getInstance().getReference();
-
 
         if(filePath != null)
         {
             final ProgressDialog progressDialog = new ProgressDialog(activity);
+
             progressDialog.setTitle("Uploading...");
             progressDialog.show();
 
@@ -246,6 +231,4 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
                     });
         }
     }
-
-
 }
