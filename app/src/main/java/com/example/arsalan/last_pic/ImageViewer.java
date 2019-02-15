@@ -103,7 +103,6 @@ public class ImageViewer extends AppCompatActivity {
         firebaseDatabase.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-
                 for (DataSnapshot userSnapshot: dataSnapshot.getChildren()) {
                     String url = userSnapshot.getValue().toString();
                     Log.d("info", "dataSnapshot:" + url);
