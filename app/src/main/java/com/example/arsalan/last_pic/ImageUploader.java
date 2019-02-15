@@ -244,7 +244,7 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
         String androidId = new AndroidId(activity).getValue();
         LastPic lastPic = new LastPic(androidId, url, 0, Instant.now().toString());
 
-        myRef.child(androidId).push().setValue(lastPic);
+        myRef.child(androidId).setValue(lastPic);
 
         Toast.makeText(activity, "Your last picture is uploaded!", Toast.LENGTH_SHORT).show();
         //Log.d("Android Id", );

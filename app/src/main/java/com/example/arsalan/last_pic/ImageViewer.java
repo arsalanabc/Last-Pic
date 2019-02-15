@@ -7,7 +7,6 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.ImageView;
 
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.arsalan.last_pic.Model.LastPic;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -20,11 +19,9 @@ import java.util.List;
 
 public class ImageViewer extends AppCompatActivity {
 
-    public ArrayList<String> images = new ArrayList<>();
     private int index = 0;
     private ImageView imageView;
     private DatabaseReference firebaseDatabase;
-    public boolean upload_image = true;
 
     String deviceBrand = android.os.Build.MANUFACTURER;
     String deviceModel = android.os.Build.MODEL;
@@ -40,8 +37,6 @@ public class ImageViewer extends AppCompatActivity {
         imageView = findViewById(R.id.imageview);
 
         fetchImagesFromFirebase();
-        Log.d("info", "images list:"+images.toString());
-
     }
 
     private void hideBar() {
@@ -62,7 +57,6 @@ public class ImageViewer extends AppCompatActivity {
 
         switch (e.getAction()) {
             case MotionEvent.ACTION_DOWN:
-
 
                 // reverse direction of rotation above the mid-line
                 if (x >= getWidth() / 2) {
@@ -105,12 +99,14 @@ public class ImageViewer extends AppCompatActivity {
         firebaseDatabase.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                imageModels = new ArrayList<>();
+
                 for (DataSnapshot userSnapshot: dataSnapshot.getChildren()) {
                     LastPic pic =userSnapshot.getValue(LastPic.class);
                     imageModels.add(pic);
+                    Log.d("images-id", userSnapshot.getKey()+this.toString());
                 }
 
-            Log.d("fb call" , images.toString());
                 displayImages();
             }
             @Override
@@ -120,18 +116,13 @@ public class ImageViewer extends AppCompatActivity {
         });
     }
 
-    @Override
-    public void onBackPressed(){
-        finish();
-    }
-
     private void displayImages() {
         GlideApp.with(getApplicationContext())
                 .load(imageModels.get(index).getUrl())
                 //.transition(DrawableTransitionOptions.withCrossFade())
                 //.apply(options)
                 //.dontAnimate()
-                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+//                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                 //.centerCrop()
                 .into(imageView);
     }
