@@ -13,6 +13,9 @@ public class LastPic {
         this.dateUpdated = dateUpdated;
     }
 
+    public LastPic() {
+    }
+
     public String getUserId() {
         return userId;
     }

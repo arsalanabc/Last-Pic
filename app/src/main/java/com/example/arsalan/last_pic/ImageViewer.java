@@ -8,6 +8,7 @@ import android.view.MotionEvent;
 import android.widget.ImageView;
 
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.example.arsalan.last_pic.Model.LastPic;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -15,6 +16,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ImageViewer extends AppCompatActivity {
 
@@ -27,6 +29,7 @@ public class ImageViewer extends AppCompatActivity {
     String deviceBrand = android.os.Build.MANUFACTURER;
     String deviceModel = android.os.Build.MODEL;
     String osVersion = android.os.Build.VERSION.RELEASE;
+    List<LastPic> imageModels = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -35,9 +38,6 @@ public class ImageViewer extends AppCompatActivity {
         setContentView(R.layout.image_viewer);
 
         imageView = findViewById(R.id.imageview);
-
-        //Firebase
-        firebaseDatabase = FirebaseDatabase.getInstance().getReference().child("photos_url");
 
         fetchImagesFromFirebase();
         Log.d("info", "images list:"+images.toString());
@@ -86,7 +86,7 @@ public class ImageViewer extends AppCompatActivity {
     }
 
     public void changeImage(int ind){
-        int imageCount = images.size() - 1 ;
+        int imageCount = imageModels.size() - 1 ;
 
         if (index + ind < 0) {
             index = 0;
@@ -100,13 +100,14 @@ public class ImageViewer extends AppCompatActivity {
     }
 
     public void fetchImagesFromFirebase() {
+        //Firebase
+        firebaseDatabase = FirebaseDatabase.getInstance().getReference().child("last_pic");
         firebaseDatabase.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot userSnapshot: dataSnapshot.getChildren()) {
-                    String url = userSnapshot.getValue().toString();
-                    Log.d("info", "dataSnapshot:" + url);
-                    images.add(url);
+                    LastPic pic =userSnapshot.getValue(LastPic.class);
+                    imageModels.add(pic);
                 }
 
             Log.d("fb call" , images.toString());
@@ -126,7 +127,7 @@ public class ImageViewer extends AppCompatActivity {
 
     private void displayImages() {
         GlideApp.with(getApplicationContext())
-                .load(images.get(index))
+                .load(imageModels.get(index).getUrl())
                 //.transition(DrawableTransitionOptions.withCrossFade())
                 //.apply(options)
                 //.dontAnimate()
