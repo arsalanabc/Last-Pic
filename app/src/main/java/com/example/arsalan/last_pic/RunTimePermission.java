@@ -16,7 +16,6 @@ public abstract class RunTimePermission extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Override
@@ -52,7 +51,6 @@ public abstract class RunTimePermission extends AppCompatActivity {
                 onPermissionsGranted(requestCode);
             }
         }
-
     }
 
     public void onPermissionsGranted(final int requestCode) {
