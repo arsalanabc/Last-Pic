@@ -7,11 +7,12 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 
 public abstract class RunTimePermission extends AppCompatActivity {
+
+    private boolean alreadyApproved = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -54,10 +55,13 @@ public abstract class RunTimePermission extends AppCompatActivity {
     }
 
     public void onPermissionsGranted(final int requestCode) {
-        Toast.makeText(this, "Permissions Received.", Toast.LENGTH_LONG).show();
-        Intent myIntent = new Intent(RunTimePermission.this, ImageViewer.class);
-        finish();
-        RunTimePermission.this.startActivity(myIntent);
+        if(!alreadyApproved){
+            Toast.makeText(this, "Permissions Received.", Toast.LENGTH_LONG).show();
 
+            Intent uploadImage = new Intent(RunTimePermission.this, UploadActivity.class);
+            finish();
+            RunTimePermission.this.startActivity(uploadImage);
+            alreadyApproved = true;
+        }
     }
 }

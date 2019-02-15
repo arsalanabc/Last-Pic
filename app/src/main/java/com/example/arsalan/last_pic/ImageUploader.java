@@ -212,7 +212,8 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
                             FirebaseDatabase database = FirebaseDatabase.getInstance();
                             DatabaseReference myRef = database.getReference("photos_url");
                             myRef.push().setValue(taskSnapshot.getDownloadUrl().toString());
-                            Toast.makeText(activity, "Uploaded:", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(activity, "Uploaded", Toast.LENGTH_SHORT).show();
+                            activity.finish();
                         }
                     })
                     .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
