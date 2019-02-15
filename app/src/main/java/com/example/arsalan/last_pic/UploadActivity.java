@@ -15,13 +15,15 @@ public class UploadActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final String[] imageColumns = {MediaStore.Images.Media._ID, MediaStore.Images.Media.DATA};
+        final String[] imageColumns = {MediaStore.Images.Media.DATA, MediaStore.Images.Media._ID};
         final String imageOrderBy = MediaStore.Images.Media._ID + " DESC";
-        Cursor imageCursor = managedQuery(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, imageColumns, null, null, imageOrderBy);
-        imageCursor.moveToFirst();
+        Cursor imageCursor = managedQuery(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, imageColumns,
+                null, null, imageOrderBy);
 
         while (imageCursor.moveToNext()) {
-            String imagePath = imageCursor.getString(imageCursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA));
+            String data = MediaStore.Images.ImageColumns.DATA;
+            int columnIndex = imageCursor.getColumnIndex(data);
+            String imagePath = imageCursor.getString(columnIndex);
             File imageFile = new File(imagePath);
             ImageUploader imageUploader = new ImageUploader(imagePath, this);
 
