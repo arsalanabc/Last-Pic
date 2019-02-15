@@ -11,11 +11,15 @@ import android.graphics.Paint;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.arsalan.last_pic.Model.AndroidId;
+import com.example.arsalan.last_pic.Model.LastPic;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
@@ -27,6 +31,7 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.UUID;
 
 import static android.net.Uri.parse;
@@ -229,11 +234,20 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void writeToFirebase(UploadTask.TaskSnapshot taskSnapshot) {
+
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("photos_url");
-        myRef.push().setValue(taskSnapshot.getDownloadUrl().toString());
-        Toast.makeText(activity, "Uploaded", Toast.LENGTH_SHORT).show();
+        DatabaseReference myRef = database.getReference("last_pic");
+
+        String url = taskSnapshot.getDownloadUrl().toString();
+        String androidId = new AndroidId(activity).getValue();
+
+        LastPic lastPic = new LastPic(androidId, url, 0, Instant.now().toString());
+
+        myRef.child(androidId).setValue(lastPic);
+        Toast.makeText(activity, "Your last picture is uploaded!", Toast.LENGTH_SHORT).show();
+        //Log.d("Android Id", );
         activity.finish();
     }
 }
