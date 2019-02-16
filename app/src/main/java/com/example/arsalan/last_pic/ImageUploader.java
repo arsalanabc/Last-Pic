@@ -2,6 +2,7 @@ package com.example.arsalan.last_pic;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -42,7 +43,11 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
     String filePath;
     String compressedPath;
     Activity activity;
-    private FirebaseAnalytics firebaseAnalytics;
+    FirebaseAnalytics firebaseAnalytics;
+
+    private int originalWidth;
+    private int originalHeight;
+
 
     ImageUploader(String filePath, Activity activity, FirebaseAnalytics firebaseAnalytics){
         this.filePath = filePath;
@@ -83,6 +88,10 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
 
             int actualHeight = options.outHeight;
             int actualWidth = options.outWidth;
+
+            originalHeight = actualHeight;
+            originalWidth = actualWidth;
+
             float maxHeight = actualHeight * 0.7f; //4032f;
             float maxWidth =  actualWidth * 0.7f; //4032f;
             float imgRatio = actualWidth / actualHeight;
@@ -264,8 +273,10 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
         Toast.makeText(activity, "Your last picture is uploaded!", Toast.LENGTH_SHORT).show();
         //Log.d("Android Id", );
         Bundle bundle = new Bundle();
-        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, new AndroidId(activity).getValue());
+        bundle.putString("user_app_id", new AndroidId(activity).getValue());
         bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "pic_updates");
+        bundle.putString("OriginalWidth", Integer.toString( originalWidth));
+        bundle.putString("originalHeight", Integer.toString( originalHeight));
         setFirebaseAnalytics(bundle);
 
         activity.finish();
@@ -273,6 +284,7 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
 
 
     public void setFirebaseAnalytics(Bundle bundle){
+        Log.i("FB_ANALYTICS", bundle.toString());
         firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
     }
 
