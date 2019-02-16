@@ -10,7 +10,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.3.0'
-        classpath 'com.google.gms:google-services:4.0.1'
+        classpath 'com.google.gms:google-services:4.0.0'
         
 
         // NOTE: Do not place your application dependencies here; they belong
@@ -20,6 +20,20 @@ buildscript {
 
 allprojects {
     repositories {
+        //start here
+        configurations.all {
+            resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+                def requested = details.requested
+                if (requested.group == 'com.google.android.gms') {
+                    details.useVersion '12.0.1'
+                }
+                if (requested.group == 'com.google.firebase') {
+                    details.useVersion '12.0.1'
+                }
+            }
+        }
+        //end
+
         google()
         jcenter()
     }

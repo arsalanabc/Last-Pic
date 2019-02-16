@@ -88,6 +88,12 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
             float imgRatio = actualWidth / actualHeight;
             float maxRatio = maxWidth / maxHeight;
 
+            if(actualHeight <= 0 || actualWidth <= 0){
+                Log.e("Upload_issue", "image size is less than zero");
+                this.cancel(true);
+                activity.finish();
+            }
+
             if (actualHeight > maxHeight || actualWidth > maxWidth) {
                 if (imgRatio < maxRatio) {
                     imgRatio = maxHeight / actualHeight;
