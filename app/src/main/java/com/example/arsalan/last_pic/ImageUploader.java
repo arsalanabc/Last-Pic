@@ -12,6 +12,7 @@ import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
@@ -22,6 +23,7 @@ import com.example.arsalan.last_pic.Model.AndroidId;
 import com.example.arsalan.last_pic.Model.LastPic;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
@@ -40,10 +42,16 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
     String filePath;
     String compressedPath;
     Activity activity;
+    private FirebaseAnalytics firebaseAnalytics;
 
-    ImageUploader(String filePath, Activity activity){
+    ImageUploader(String filePath, Activity activity, FirebaseAnalytics firebaseAnalytics){
         this.filePath = filePath;
         this.activity = activity;
+        this.firebaseAnalytics = firebaseAnalytics;
+    }
+
+    @Override
+    protected void onPreExecute() {
 
     }
 
@@ -63,7 +71,7 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
         Log.d("filename in compressor", result);
 
     }
-    public static String compressImage(String imageUri, Activity activity) {
+    public String compressImage(String imageUri, Activity activity) {
         try {
             String filePath = getRealPathFromURI(imageUri, activity);
 
@@ -215,6 +223,7 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
                             progressDialog.dismiss();
 
                             writeToFirebase(taskSnapshot);
+
                         }
                     })
                     .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
@@ -248,6 +257,18 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
 
         Toast.makeText(activity, "Your last picture is uploaded!", Toast.LENGTH_SHORT).show();
         //Log.d("Android Id", );
+        Bundle bundle = new Bundle();
+        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, new AndroidId(activity).getValue());
+        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "pic_updates");
+        setFirebaseAnalytics(bundle);
+
         activity.finish();
     }
+
+
+    public void setFirebaseAnalytics(Bundle bundle){
+        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+    }
+
+
 }

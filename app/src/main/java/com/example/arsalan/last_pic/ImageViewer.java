@@ -8,6 +8,7 @@ import android.view.MotionEvent;
 import android.widget.ImageView;
 
 import com.example.arsalan.last_pic.Model.LastPic;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -22,6 +23,7 @@ public class ImageViewer extends AppCompatActivity {
     private int index = 0;
     private ImageView imageView;
     private DatabaseReference firebaseDatabase;
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     String deviceBrand = android.os.Build.MANUFACTURER;
     String deviceModel = android.os.Build.MODEL;
@@ -31,6 +33,9 @@ public class ImageViewer extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
+
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+
         hideBar();
         setContentView(R.layout.image_viewer);
 

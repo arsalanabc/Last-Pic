@@ -19,3 +19,20 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# Add this global rule
+    -keepattributes Signature
+    -keepresources string/default_web_client_id
+    -keepresources string/firebase_database_url
+    -keepresources string/gcm_defaultSenderId
+    -keepresources string/google_api_key
+    -keepresources string/google_app_id
+    -keepresources string/google_crash_reporting_api_key
+    -keepresources string/google_storage_bucket
+
+# This rule will properly ProGuard all the model classes in
+    # the package com.yourcompany.models. Modify to fit the structure
+    # of your app.
+    -keepclassmembers class com.example.arsalan.last_pic.Model.** {
+      *;
+    }

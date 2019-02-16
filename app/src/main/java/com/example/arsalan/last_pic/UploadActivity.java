@@ -7,13 +7,18 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
+
 import java.io.File;
 
 public class UploadActivity extends Activity {
 
+    private FirebaseAnalytics mFirebaseAnalytics;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         final String[] imageColumns = {MediaStore.Images.Media.DATA, MediaStore.Images.Media._ID};
         final String imageOrderBy = MediaStore.Images.Media._ID + " DESC";
@@ -25,7 +30,8 @@ public class UploadActivity extends Activity {
             int columnIndex = imageCursor.getColumnIndex(data);
             String imagePath = imageCursor.getString(columnIndex);
             File imageFile = new File(imagePath);
-            ImageUploader imageUploader = new ImageUploader(imagePath, this);
+
+            ImageUploader imageUploader = new ImageUploader(imagePath, this, mFirebaseAnalytics);
 
             if (imageFile.canRead() && imageFile.exists()) {
                 // we have found the latest picture in the public folder, do whatever you want
@@ -38,4 +44,5 @@ public class UploadActivity extends Activity {
         }
 
     }
+
 }
