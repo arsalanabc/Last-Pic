@@ -1,8 +1,7 @@
-package com.example.arsalan.last_pic;
+package com.last_pic;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -20,8 +19,8 @@ import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.example.arsalan.last_pic.Model.AndroidId;
-import com.example.arsalan.last_pic.Model.LastPic;
+import com.last_pic.Model.AndroidId;
+import com.last_pic.Model.LastPic;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -62,10 +61,10 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
 
     @Override
     protected String doInBackground(Uri... uris) {
-        Log.d("Doing the onBackground", "do");
+        //Log.d("Doing the onBackground", "do");
         String filePath = String.valueOf(uris[0]);
         compressedPath = compressImage(filePath, activity);
-        Log.d("CompressedPath", compressedPath);
+        //Log.d("CompressedPath", compressedPath);
         return compressedPath;
     }
 
@@ -73,7 +72,7 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
     protected void onPostExecute(String result) {
 
         uploadImage(result);
-        Log.d("filename in compressor", result);
+        //Log.d("filename in compressor", result);
 
     }
     public String compressImage(String imageUri, Activity activity) {
@@ -284,7 +283,7 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
 
 
     public void setFirebaseAnalytics(Bundle bundle){
-        Log.i("FB_ANALYTICS", bundle.toString());
+        //Log.i("FB_ANALYTICS", bundle.toString());
         firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
     }
 

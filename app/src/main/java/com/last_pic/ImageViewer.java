@@ -1,19 +1,18 @@
-package com.example.arsalan.last_pic;
+package com.last_pic;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.ImageView;
 
-import com.example.arsalan.last_pic.Model.LastPic;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.last_pic.Model.LastPic;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -109,7 +108,7 @@ public class ImageViewer extends AppCompatActivity {
                 for (DataSnapshot userSnapshot: dataSnapshot.getChildren()) {
                     LastPic pic =userSnapshot.getValue(LastPic.class);
                     imageModels.add(pic);
-                    Log.d("images-id", userSnapshot.getKey()+this.toString());
+                    //Log.d("images-id", userSnapshot.getKey()+this.toString());
                 }
 
                 displayImages();

@@ -1,4 +1,4 @@
-package com.example.arsalan.last_pic.Model;
+package com.last_pic.Model;
 
 import android.app.Activity;
 import android.provider.Settings;

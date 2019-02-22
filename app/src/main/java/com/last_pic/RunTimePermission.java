@@ -1,4 +1,4 @@
-package com.example.arsalan.last_pic;
+package com.last_pic;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;

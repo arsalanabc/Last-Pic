@@ -1,4 +1,4 @@
-package com.example.arsalan.last_pic;
+package com.last_pic;
 
 import android.Manifest;
 import android.os.Bundle;
