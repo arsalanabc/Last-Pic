@@ -32,6 +32,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.UUID;
@@ -61,12 +62,12 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
         String filePath = String.valueOf(uris[0]);
         compressedPath = compressImage(filePath, activity);
         Log.d("CompressedPath", compressedPath);
+        deleteCompressedImageAfterUpload(compressedPath);
         return compressedPath;
     }
 
     @Override
     protected void onPostExecute(String result) {
-
         uploadImage(result);
         Log.d("filename in compressor", result);
 
@@ -276,5 +277,21 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
         firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
     }
 
+    private void deleteCompressedImageAfterUpload (String imagePath) {
+        // TODO does not really delete the file
+        File file = new File(imagePath);
+        if (file.exists()) {
+            Log.d("Exists", "file exists");
+
+            if (file.delete()) {
+                if (file.exists()) Log.d("Delete failed ", "file delete 2");
+                else Log.d("Deleted", "file delete 2"+ imagePath);
+            } else {
+                Log.d("No Delete", "file not delete 2"+ imagePath);
+            }
+        } else {
+            Log.d("Exists", "file doesn't exists");
+        }
+    }
 
 }
