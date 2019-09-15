@@ -123,7 +123,7 @@ public class ImageViewer extends AppCompatActivity {
 
     private void displayImages() {
         GlideApp.with(getApplicationContext())
-                .load(imageModels.get(index).getUrl())
+                .load(imageModels.get(index).getFirebaseURL())
                 //.transition(DrawableTransitionOptions.withCrossFade())
                 //.apply(options)
                 //.dontAnimate()
