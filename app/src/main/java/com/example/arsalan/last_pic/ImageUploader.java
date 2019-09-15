@@ -1,7 +1,6 @@
 package com.example.arsalan.last_pic;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -11,18 +10,18 @@ import android.graphics.Paint;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.example.arsalan.last_pic.Model.AndroidId;
 import com.example.arsalan.last_pic.Model.LastPic;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -32,7 +31,6 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.UUID;
@@ -41,7 +39,6 @@ import static android.net.Uri.parse;
 
 public class ImageUploader extends AsyncTask <Uri, Integer , String> {
     String filePath;
-    String compressedPath;
     Activity activity;
     private FirebaseAnalytics firebaseAnalytics;
 
@@ -60,19 +57,10 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
     protected String doInBackground(Uri... uris) {
         Log.d("Doing the onBackground", "do");
         String filePath = String.valueOf(uris[0]);
-        compressedPath = compressImage(filePath, activity);
-        Log.d("CompressedPath", compressedPath);
-        deleteCompressedImageAfterUpload(compressedPath);
-        return compressedPath;
+        return compressImageNew(filePath, activity);
     }
 
-    @Override
-    protected void onPostExecute(String result) {
-        uploadImage(result);
-        Log.d("filename in compressor", result);
-
-    }
-    public String compressImage(String imageUri, Activity activity) {
+    public String compressImageNew (String imageUri, Activity activity) {
         try {
             String filePath = getRealPathFromURI(imageUri, activity);
 
@@ -84,8 +72,8 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
 
             int actualHeight = options.outHeight;
             int actualWidth = options.outWidth;
-            float maxHeight = actualHeight * 0.7f; //4032f;
-            float maxWidth =  actualWidth * 0.7f; //4032f;
+            float maxHeight = actualHeight * 0.6f; //4032f;
+            float maxWidth =  actualWidth * 0.6f; //4032f;
             float imgRatio = actualWidth / actualHeight;
             float maxRatio = maxWidth / maxHeight;
 
@@ -168,16 +156,15 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
 
             if (scaledBitmap != null) {
                 ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-                scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-                String path = MediaStore.Images.Media.insertImage(activity.getContentResolver(), scaledBitmap, "Title", null);
-                return Uri.parse(path).toString();
+                scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 70, bytes);
+                uploadImage(bytes);
             }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return null;
+        return "done";
     }
 
     private static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
@@ -211,87 +198,78 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
         }
     }
 
-    private void uploadImage(String imagePath) {
-        Uri filePath = Uri.parse(imagePath);
-        StorageReference storageReference = FirebaseStorage.getInstance().getReference();
+    public String uploadImage (ByteArrayOutputStream bytes){
+        byte[] data = bytes.toByteArray();
 
-        if(filePath != null)
-        {
-            final ProgressDialog progressDialog = new ProgressDialog(activity);
+        if(data.length != 0){
+//            final ProgressDialog progressDialog = new ProgressDialog(activity);
+//            progressDialog.setTitle("Uploading...");
+//            progressDialog.show();
 
-            progressDialog.setTitle("Uploading...");
-            progressDialog.show();
-
+            StorageReference storageReference = FirebaseStorage.getInstance().getReference();
             StorageReference ref = storageReference.child("pictures/"+ UUID.randomUUID().toString());
-            ref.putFile(filePath)
-                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            progressDialog.dismiss();
 
-                            writeToFirebase(taskSnapshot);
 
-                        }
-                    })
+            Log.d("putBytes", "putting bytes");
+            UploadTask uploadTask = ref.putBytes(data);
+            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+//                    progressDialog.dismiss();
+
+                    writeToFirebase(taskSnapshot);
+
+                }
+            })
                     .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
                             double progress = (100.0*taskSnapshot.getBytesTransferred()/taskSnapshot
                                     .getTotalByteCount());
-                            progressDialog.setMessage("Uploaded "+(int)progress+"%");
+//                            progressDialog.setMessage("Uploaded "+(int)progress+"%");
                         }
                     }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            progressDialog.dismiss();
-                            Toast.makeText(activity, "Failed "+e.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                @Override
+                public void onFailure(@NonNull Exception e) {
+//                    progressDialog.dismiss();
+                    Toast.makeText(activity, "Failed "+e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        UploadTask.TaskSnapshot downUri = task.getResult();
+                        Log.d("Final URL", "onComplete: Url: " + downUri.toString());
+                    }
+                }
+            });
         }
+        return "done";
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void writeToFirebase(UploadTask.TaskSnapshot taskSnapshot) {
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("last_pic");
 
-        String url = taskSnapshot.getDownloadUrl().toString();
-        String androidId = new AndroidId(activity).getValue();
-        LastPic lastPic = new LastPic(androidId, url, 0, Instant.now().toString());
+        String firebaseURL = taskSnapshot.getDownloadUrl().toString();
+
+        String androidId = AndroidId.getAndroidId(activity);
+        LastPic lastPic = new LastPic(androidId, firebaseURL, filePath, 0, Instant.now().toString());
 
         myRef.child(androidId).setValue(lastPic);
 
         Toast.makeText(activity, "Your last picture is uploaded!", Toast.LENGTH_SHORT).show();
-        //Log.d("Android Id", );
         Bundle bundle = new Bundle();
-        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, new AndroidId(activity).getValue());
+        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, androidId);
         bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "pic_updates");
         setFirebaseAnalytics(bundle);
 
         activity.finish();
     }
 
-
     public void setFirebaseAnalytics(Bundle bundle){
         firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
-    }
-
-    private void deleteCompressedImageAfterUpload (String imagePath) {
-        // TODO does not really delete the file
-        File file = new File(imagePath);
-        if (file.exists()) {
-            Log.d("Exists", "file exists");
-
-            if (file.delete()) {
-                if (file.exists()) Log.d("Delete failed ", "file delete 2");
-                else Log.d("Deleted", "file delete 2"+ imagePath);
-            } else {
-                Log.d("No Delete", "file not delete 2"+ imagePath);
-            }
-        } else {
-            Log.d("Exists", "file doesn't exists");
-        }
     }
 
 }
