@@ -58,13 +58,18 @@ public class UploadActivity extends Activity {
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot data : dataSnapshot.getChildren()) {
-                             if(!data.getValue(LastPic.class)
-                                     .getDeviceURL().equals(currentImagePath)){
-                                 updateImage(currentImagePath);
-                             } else {
-                                 noUpdateNeeded();
-                             }
+                if(dataSnapshot.getChildrenCount() == 0){
+                    updateImage(currentImagePath);
+                } else {
+                    for (DataSnapshot data : dataSnapshot.getChildren()) {
+                        if(!data.getValue(LastPic.class)
+                                .getDeviceURL().equals(currentImagePath)
+                        ){
+                            updateImage(currentImagePath);
+                        } else {
+                            noUpdateNeeded();
+                        }
+                    }
                 }
             }
 
