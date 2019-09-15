@@ -20,7 +20,7 @@
             android:theme="@style/FullscreenTheme">
         </activity>
 
-        <activity android:name=".MainActivity">
+        <activity android:name=".Activities.LandingViewActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -28,7 +28,13 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".MainActivity">
+        </activity>
+
         <activity android:name=".UploadActivity">
+        </activity>
+
+        <activity android:name=".Activities.SlidingActivity">
         </activity>
     </application>
 
