@@ -24,10 +24,11 @@ public class MainActivity extends RunTimePermission {
         getStarted_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                permissions = new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE };
+                permissions = new String[]{
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.READ_EXTERNAL_STORAGE };
                 MainActivity.super.requestAppPermissions(permissions,
                         REQUEST_PERMISSIONS);
-                finish();
             }
         });
     }
