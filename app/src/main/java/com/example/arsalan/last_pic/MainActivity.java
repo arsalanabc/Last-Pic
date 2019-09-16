@@ -15,23 +15,13 @@ public class MainActivity extends RunTimePermission {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.main_screen);
-
-        Button getStarted_btn = findViewById(R.id.dummy_button);
-
         hideBar();
 
-        getStarted_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                permissions = new String[]{
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.READ_EXTERNAL_STORAGE };
-                MainActivity.super.requestAppPermissions(permissions,
-                        REQUEST_PERMISSIONS);
-            }
-        });
-        getStarted_btn.performClick();
+        permissions = new String[]{
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.READ_EXTERNAL_STORAGE };
+        MainActivity.super.requestAppPermissions(permissions,
+                REQUEST_PERMISSIONS);
     }
 
     private void hideBar() {
