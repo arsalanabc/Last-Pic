@@ -2,6 +2,7 @@ package com.example.arsalan.last_pic.Activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.v7.app.ActionBar;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.view.View;
@@ -32,6 +33,7 @@ public class SlidingActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        hideBar();
         setContentView(R.layout.main_sliding_screen);
         vp = findViewById(R.id.view_pager);
         Layout_bars = findViewById(R.id.layoutBars);
@@ -139,6 +141,13 @@ public class SlidingActivity extends AppCompatActivity {
         @Override
         public boolean isViewFromObject(View v, Object object) {
             return v == object;
+        }
+    }
+
+    private void hideBar() {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.hide();
         }
     }
 }
