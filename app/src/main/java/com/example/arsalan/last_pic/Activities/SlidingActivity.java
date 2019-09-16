@@ -35,9 +35,18 @@ public class SlidingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         hideBar();
         setContentView(R.layout.main_sliding_screen);
-        vp = findViewById(R.id.view_pager);
-        Layout_bars = findViewById(R.id.layoutBars);
-        Next = findViewById(R.id.next);
+        vp = (ViewPager) findViewById(R.id.view_pager);
+        Layout_bars = (LinearLayout) findViewById(R.id.layoutBars);
+        Next = (Button) findViewById(R.id.next);
+        Next.setVisibility(View.GONE);
+
+        Next.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                launchMain();
+            }
+        });
+
         screens = new int[]{
                 R.layout.sliding_screen1,
                 R.layout.sliding_screen2,
@@ -54,14 +63,6 @@ public class SlidingActivity extends AppCompatActivity {
         ColoredBars(0);
     }
 
-    public void next(View v) {
-        int i = getItem(+1);
-        if (i < screens.length) {
-            vp.setCurrentItem(i);
-        } else {
-            launchMain();
-        }
-    }
 
     private void ColoredBars(int thisScreen) {
         int[] colorsInactive = getResources().getIntArray(R.array.dot_on_page_not_active);
@@ -97,8 +98,9 @@ public class SlidingActivity extends AppCompatActivity {
             ColoredBars(position);
             if (position == screens.length - 1) {
                 Next.setText("start");
+                Next.setVisibility(View.VISIBLE);
             } else {
-                Next.setText(getString(R.string.next));
+                Next.setVisibility(View.GONE);
             }
         }
 
