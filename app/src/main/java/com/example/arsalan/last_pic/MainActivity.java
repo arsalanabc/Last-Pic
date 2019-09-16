@@ -7,7 +7,6 @@ import android.support.v7.app.ActionBar;
 public class MainActivity extends RunTimePermission {
 
     private static final int REQUEST_PERMISSIONS = 20;
-    private String[] permissions ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -15,9 +14,7 @@ public class MainActivity extends RunTimePermission {
 
         hideBar();
 
-        permissions = new String[]{
-                Manifest.permission.READ_EXTERNAL_STORAGE };
-        MainActivity.super.requestAppPermissions(permissions,
+        MainActivity.super.requestAppPermissions(Manifest.permission.READ_EXTERNAL_STORAGE,
                 REQUEST_PERMISSIONS);
     }
 
