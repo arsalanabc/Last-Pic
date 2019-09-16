@@ -3,8 +3,6 @@ package com.example.arsalan.last_pic;
 import android.Manifest;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
-import android.view.View;
-import android.widget.Button;
 
 public class MainActivity extends RunTimePermission {
 
@@ -18,7 +16,6 @@ public class MainActivity extends RunTimePermission {
         hideBar();
 
         permissions = new String[]{
-                Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 Manifest.permission.READ_EXTERNAL_STORAGE };
         MainActivity.super.requestAppPermissions(permissions,
                 REQUEST_PERMISSIONS);
