@@ -7,7 +7,6 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.example.arsalan.last_pic.R;
 
-//TODO change this activity to be the launcher
 public class LandingViewActivity extends AppCompatActivity {
 
     @Override

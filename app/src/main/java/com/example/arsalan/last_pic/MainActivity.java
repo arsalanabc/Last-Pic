@@ -31,6 +31,7 @@ public class MainActivity extends RunTimePermission {
                         REQUEST_PERMISSIONS);
             }
         });
+        getStarted_btn.performClick();
     }
 
     private void hideBar() {
