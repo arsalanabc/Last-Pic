@@ -24,7 +24,7 @@ public class SlidingActivity extends AppCompatActivity {
     LinearLayout Layout_bars;
     TextView[] bottomBars;
     int[] screens;
-    Button Skip, Next;
+    Button Next;
     ViewPager vp;
     MyViewPagerAdapter myvpAdapter;
 
@@ -35,7 +35,6 @@ public class SlidingActivity extends AppCompatActivity {
         setContentView(R.layout.main_sliding_screen);
         vp = findViewById(R.id.view_pager);
         Layout_bars = findViewById(R.id.layoutBars);
-        Skip = findViewById(R.id.skip);
         Next = findViewById(R.id.next);
         screens = new int[]{
                 R.layout.sliding_screen1,
@@ -60,10 +59,6 @@ public class SlidingActivity extends AppCompatActivity {
         } else {
             launchMain();
         }
-    }
-
-    public void skip(View view) {
-        launchMain();
     }
 
     private void ColoredBars(int thisScreen) {
@@ -100,10 +95,8 @@ public class SlidingActivity extends AppCompatActivity {
             ColoredBars(position);
             if (position == screens.length - 1) {
                 Next.setText("start");
-                Skip.setVisibility(View.GONE);
             } else {
                 Next.setText(getString(R.string.next));
-                Skip.setVisibility(View.VISIBLE);
             }
         }
 
