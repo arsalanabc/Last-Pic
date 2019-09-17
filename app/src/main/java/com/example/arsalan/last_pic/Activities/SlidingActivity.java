@@ -25,7 +25,7 @@ public class SlidingActivity extends AppCompatActivity {
     LinearLayout Layout_bars;
     TextView[] bottomBars;
     int[] screens;
-    Button Next;
+    Button start;
     ViewPager vp;
     MyViewPagerAdapter myvpAdapter;
 
@@ -37,10 +37,10 @@ public class SlidingActivity extends AppCompatActivity {
         setContentView(R.layout.main_sliding_screen);
         vp = (ViewPager) findViewById(R.id.view_pager);
         Layout_bars = (LinearLayout) findViewById(R.id.layoutBars);
-        Next = (Button) findViewById(R.id.next);
-        Next.setVisibility(View.GONE);
+        start = (Button) findViewById(R.id.start);
+        start.setVisibility(View.GONE);
 
-        Next.setOnClickListener(new View.OnClickListener() {
+        start.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 launchMain();
@@ -97,10 +97,10 @@ public class SlidingActivity extends AppCompatActivity {
         public void onPageSelected(int position) {
             ColoredBars(position);
             if (position == screens.length - 1) {
-                Next.setText("start");
-                Next.setVisibility(View.VISIBLE);
+                start.setText("start");
+                start.setVisibility(View.VISIBLE);
             } else {
-                Next.setVisibility(View.GONE);
+                start.setVisibility(View.GONE);
             }
         }
 
