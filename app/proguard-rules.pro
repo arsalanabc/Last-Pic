@@ -33,6 +33,6 @@
 # This rule will properly ProGuard all the model classes in
     # the package com.yourcompany.models. Modify to fit the structure
     # of your app.
-    -keepclassmembers class com.last_pic.Model.** {
+    -keepclassmembers class com.example.lastpic.Model.** {
       *;
     }

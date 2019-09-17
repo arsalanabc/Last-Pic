@@ -1,4 +1,4 @@
-package com.last_pic;
+package com.example.lastpic;
 
 import android.content.Context;
 

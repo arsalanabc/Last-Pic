@@ -1,14 +1,16 @@
-package com.last_pic.Model;
+package com.example.lastpic.Model;
 
 public class LastPic {
     private String userId;
-    private String url;
+    private String firebaseURL;
+    private String deviceURL;
     private int likes;
     private String dateUpdated;
 
-    public LastPic(String userId, String url, int likes, String dateUpdated) {
+    public LastPic(String userId, String firebaseURL, String deviceURL, int likes, String dateUpdated) {
         this.userId = userId;
-        this.url = url;
+        this.firebaseURL = firebaseURL;
+        this.deviceURL = deviceURL;
         this.likes = likes;
         this.dateUpdated = dateUpdated;
     }
@@ -24,12 +26,20 @@ public class LastPic {
         this.userId = userId;
     }
 
-    public String getUrl() {
-        return url;
+    public String getFirebaseURL() {
+        return firebaseURL;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setFirebaseURL(String firebaseURL) {
+        this.firebaseURL = firebaseURL;
+    }
+
+    public String getDeviceURL() {
+        return deviceURL;
+    }
+
+    public void setDeviceURL(String deviceURL) {
+        this.deviceURL = deviceURL;
     }
 
     public int getLikes() {
@@ -47,4 +57,5 @@ public class LastPic {
     public void setDateUpdated(String dateUpdated) {
         this.dateUpdated = dateUpdated;
     }
+
 }

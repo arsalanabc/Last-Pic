@@ -1,4 +1,4 @@
-package com.last_pic;
+package com.example.lastpic;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -17,7 +17,6 @@ public abstract class RunTimePermission extends AppCompatActivity {
 
     private boolean alreadyApproved = false;
     private FirebaseAnalytics mFirebaseAnalytics;
-
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -40,34 +39,24 @@ public abstract class RunTimePermission extends AppCompatActivity {
         }
     }
 
-    public void requestAppPermissions(final String[] permissions, final int requestCode) {
-        int permissionCheck = PackageManager.PERMISSION_GRANTED;
-        boolean shouldShowRequestPermissionRationale = false;
-        for (String permission : permissions){
+    public void requestAppPermissions(final String permission, final int requestCode) {
 
-            permissionCheck = permissionCheck + ContextCompat.checkSelfPermission(this, permission);
-            shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale ||
-                    ActivityCompat.shouldShowRequestPermissionRationale(this, permission);
-
-            if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
-                if (shouldShowRequestPermissionRationale) {
-                    Toast.makeText(RunTimePermission.this, "We need %s to make this app work", Toast.LENGTH_SHORT).show();
-                } else {
-                    ActivityCompat.requestPermissions(this, permissions, requestCode);
+            if (ContextCompat.checkSelfPermission(RunTimePermission.this, permission) != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this, permission)) {
+                    Toast.makeText(RunTimePermission.this, "We need "+permission+" to make this app work", Toast.LENGTH_LONG).show();
                 }
+                ActivityCompat.requestPermissions(RunTimePermission.this, new String[]{permission}, requestCode);
             } else {
                 onPermissionsGranted(requestCode);
             }
-        }
     }
 
     public void onPermissionsGranted(final int requestCode) {
         if(!alreadyApproved){
             Toast.makeText(this, "Permissions Received.", Toast.LENGTH_LONG).show();
-
             Intent uploadImage = new Intent(RunTimePermission.this, UploadActivity.class);
-            finish();
             RunTimePermission.this.startActivity(uploadImage);
+            RunTimePermission.this.finish();
             alreadyApproved = true;
         }
     }

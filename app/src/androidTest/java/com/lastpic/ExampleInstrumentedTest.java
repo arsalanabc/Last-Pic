@@ -1,4 +1,4 @@
-package com.example.arsalan.last_pic;
+package com.lastpic;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.example.arsalan.last_pic", appContext.getPackageName());
+        assertEquals("com.example.lastpic", appContext.getPackageName());
     }
 }
