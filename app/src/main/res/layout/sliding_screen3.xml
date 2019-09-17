@@ -5,19 +5,33 @@
     android:background="@color/screen3"
     >
     <ImageView
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
-        android:id="@+id/imageView" />
-    <TextView
+        android:id="@+id/imageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Screen 3"
-        android:textColor="@android:color/white"
-        android:textSize="50dp"
-        android:textStyle="bold"
+        android:layout_centerInParent="true"
+        android:layout_centerVertical="false"
+        android:layout_marginStart="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/warning"
+        android:contentDescription="@string/slide_1_title" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_below="@+id/imageView"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="32dp" />
+        android:layout_marginStart="10dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginBottom="10dp"
+        android:fontFamily="@font/open_sans_light"
+        android:text="@string/slide_3_desc"
+        android:textColor="#190020"
+        android:textSize="24sp"
+        android:textStyle="bold" />
 </RelativeLayout>
