@@ -97,7 +97,6 @@ public class SlidingActivity extends AppCompatActivity {
         public void onPageSelected(int position) {
             ColoredBars(position);
             if (position == screens.length - 1) {
-                start.setText("start");
                 start.setVisibility(View.VISIBLE);
             } else {
                 start.setVisibility(View.GONE);
