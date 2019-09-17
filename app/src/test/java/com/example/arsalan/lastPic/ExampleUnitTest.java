@@ -1,4 +1,4 @@
-package com.example.arsalan.last_pic;
+package com.example.arsalan.lastPic;
 
 import org.junit.Test;
 

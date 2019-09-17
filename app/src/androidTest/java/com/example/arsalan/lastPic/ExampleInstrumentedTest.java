@@ -1,4 +1,4 @@
-package com.example.arsalan.last_pic;
+package com.example.arsalan.lastPic;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
