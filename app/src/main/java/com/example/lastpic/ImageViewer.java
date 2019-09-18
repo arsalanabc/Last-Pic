@@ -8,6 +8,8 @@ import android.view.MotionEvent;
 import android.widget.ImageView;
 
 import com.example.lastpic.Model.LastPic;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -24,6 +26,7 @@ public class ImageViewer extends AppCompatActivity {
     private ImageView imageView;
     private DatabaseReference firebaseDatabase;
     private FirebaseAnalytics mFirebaseAnalytics;
+    private Tracker mTracker;
 
     String deviceBrand = android.os.Build.MANUFACTURER;
     String deviceModel = android.os.Build.MODEL;
@@ -38,8 +41,16 @@ public class ImageViewer extends AppCompatActivity {
 
         hideBar();
         setContentView(R.layout.image_viewer);
-
         imageView = findViewById(R.id.imageview);
+
+        // Obtain the shared Tracker instance.
+        AnalyticsApplication application = (AnalyticsApplication) getApplication();
+        mTracker = application.getDefaultTracker();
+        mTracker.setScreenName("ImageViewer Launched");
+        mTracker.send(new HitBuilders.EventBuilder()
+                .setCategory("IMAGEVIEW_LAUNCHED")
+                .setLabel("ENTERED")
+                .build());
 
         fetchImagesFromFirebase();
     }

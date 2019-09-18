@@ -21,4 +21,5 @@
     <string name="play_again">Play Again</string>
     <string name="right_touch_text">Touch right part of the screen for the next picture.</string>
     <string name="left_touch_text">Touch left part of the screen for the previous picture.</string>
+
 </resources>

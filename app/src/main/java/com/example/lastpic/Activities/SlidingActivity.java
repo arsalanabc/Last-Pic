@@ -3,6 +3,7 @@ package com.example.lastpic.Activities;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.ActionBar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.view.View;
@@ -15,9 +16,12 @@ import android.support.v4.view.ViewPager;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.lastpic.AnalyticsApplication;
 import com.example.lastpic.MainActivity;
 import com.example.lastpic.Managers.PreferenceManager;
 import com.example.lastpic.R;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 
 public class SlidingActivity extends AppCompatActivity {
 
@@ -28,12 +32,20 @@ public class SlidingActivity extends AppCompatActivity {
     Button start;
     ViewPager vp;
     MyViewPagerAdapter myvpAdapter;
+    private Tracker mTracker;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         hideBar();
+
+        // Obtain the shared Tracker instance.
+        AnalyticsApplication application = (AnalyticsApplication) getApplication();
+        mTracker = application.getDefaultTracker();
+        mTracker.setScreenName("SlidingActivity LAUNCHED");
+        sendToGoogleAnalytics("LANDED");
+
         setContentView(R.layout.main_sliding_screen);
         vp = (ViewPager) findViewById(R.id.view_pager);
         Layout_bars = (LinearLayout) findViewById(R.id.layoutBars);
@@ -150,5 +162,13 @@ public class SlidingActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.hide();
         }
+    }
+
+    public void sendToGoogleAnalytics (String label){
+        Log.d("GA","event_sent: "+label);
+        mTracker.send(new HitBuilders.EventBuilder()
+                .setCategory("SLIDES")
+                .setLabel(label)
+                .build());
     }
 }
