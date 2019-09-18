@@ -261,16 +261,17 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
 
         final String androidId = AndroidId.getAndroidId(activity);
         String newKeyToUploadImage = myRef.push().getKey();
+        String updateTimeStamp = Instant.now().toString();
         PicUploadRecord picUploadRecord = new PicUploadRecord(
                 androidId,
                 0,
                 firebaseURL,
                 filePath,
-                Instant.now().toString());
+                updateTimeStamp);
         myRef.child(newKeyToUploadImage).setValue(picUploadRecord);
 
         // update the update key for the user
-        database.getReference("last_pic").child(androidId).setValue(new LastPic(newKeyToUploadImage));
+        database.getReference("last_pic").child(androidId).setValue(new LastPic(newKeyToUploadImage, updateTimeStamp));
 
         Toast.makeText(activity, "Your last picture is uploaded!", Toast.LENGTH_SHORT).show();
         Bundle bundle = new Bundle();

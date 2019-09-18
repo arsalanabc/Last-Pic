@@ -1,11 +1,21 @@
 package com.example.lastpic.Model;
 
 public class LastPic {
+    private String timeStamp;
     private String upload_records_key;
 
 
-    public LastPic(String picUploadRecordId) {
+    public String getTimeStamp() {
+        return timeStamp;
+    }
+
+    public void setTimeStamp(String timeStamp) {
+        this.timeStamp = timeStamp;
+    }
+
+    public LastPic(String picUploadRecordId, String timeStamp) {
         this.upload_records_key = picUploadRecordId;
+        this.timeStamp = timeStamp;
     }
 
     public LastPic() {
