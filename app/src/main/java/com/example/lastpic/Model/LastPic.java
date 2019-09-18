@@ -1,12 +1,10 @@
 package com.example.lastpic.Model;
 
 public class LastPic {
-    private String uid;
     private String upload_records_key;
 
 
-    public LastPic(String uid, String picUploadRecordId) {
-        this.uid = uid;
+    public LastPic(String picUploadRecordId) {
         this.upload_records_key = picUploadRecordId;
     }
 

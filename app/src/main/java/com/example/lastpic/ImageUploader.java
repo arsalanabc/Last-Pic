@@ -270,7 +270,7 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
         myRef.child(newKeyToUploadImage).setValue(picUploadRecord);
 
         // update the update key for the user
-        database.getReference("last_pic").child(androidId).setValue(new LastPic(androidId, newKeyToUploadImage));
+        database.getReference("last_pic").child(androidId).setValue(new LastPic(newKeyToUploadImage));
 
         Toast.makeText(activity, "Your last picture is uploaded!", Toast.LENGTH_SHORT).show();
         Bundle bundle = new Bundle();
