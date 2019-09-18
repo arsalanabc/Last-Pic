@@ -6,9 +6,12 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 
 import com.example.lastpic.Model.AndroidId;
 import com.example.lastpic.Model.LastPic;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -23,11 +26,19 @@ public class UploadActivity extends Activity {
 
     private FirebaseAnalytics mFirebaseAnalytics;
     private DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
+    private Tracker mTracker;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+
+        // Obtain the shared Tracker instance.
+        AnalyticsApplication application = (AnalyticsApplication) getApplication();
+        mTracker = application.getDefaultTracker();
+        mTracker.setScreenName("UploadActivity requested");
+        sendToGoogleAnalytics("STARTED");
 
         final String[] imageColumns = {MediaStore.Images.Media.DATA, MediaStore.Images.Media._ID};
         final String imageOrderBy = MediaStore.Images.Media._ID + " DESC";
@@ -42,8 +53,9 @@ public class UploadActivity extends Activity {
 
 
             if (imageFile.canRead() && imageFile.exists()) {
-                // we have found the latest picture in the public folder, do whatever you want
+                sendToGoogleAnalytics("IMAGE_FOUND");
 
+                // we have found the latest picture in the public folder, do whatever you want
                 checkIfImageNeedsToBeUpdated(imagePath);
                 startActivity(new Intent(this, ImageViewer.class));
                 break;
@@ -81,11 +93,22 @@ public class UploadActivity extends Activity {
     }
 
     private void noUpdateNeeded() {
+        sendToGoogleAnalytics("NO_UPLOAD_NEEDED");
         this.finish();
     }
 
     private void updateImage(String imagePath) {
+        sendToGoogleAnalytics("UPLOAD_NEEDED");
         ImageUploader imageUploader = new ImageUploader(imagePath, this, mFirebaseAnalytics);
         imageUploader.execute(Uri.fromFile(new File(imagePath)));
     }
+
+    public void sendToGoogleAnalytics (String label){
+        Log.d("GA","event_sent: "+label);
+        mTracker.send(new HitBuilders.EventBuilder()
+                .setCategory("UPLOAD")
+                .setLabel(label)
+                .build());
+    }
+
 }
