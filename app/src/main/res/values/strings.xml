@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Last-Pic</string>
+    <string name="app_name">LastPic</string>
 
     <string name="dummy_button">Get Started</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
