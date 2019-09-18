@@ -3,9 +3,7 @@ package com.example.lastpic;
 import android.Manifest;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
-import android.util.Log;
 
-import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 
