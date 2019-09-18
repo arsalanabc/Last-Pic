@@ -1,61 +1,23 @@
 package com.example.lastpic.Model;
 
 public class LastPic {
-    private String userId;
-    private String firebaseURL;
-    private String deviceURL;
-    private int likes;
-    private String dateUpdated;
+    private String uid;
+    private String upload_records_key;
 
-    public LastPic(String userId, String firebaseURL, String deviceURL, int likes, String dateUpdated) {
-        this.userId = userId;
-        this.firebaseURL = firebaseURL;
-        this.deviceURL = deviceURL;
-        this.likes = likes;
-        this.dateUpdated = dateUpdated;
+
+    public LastPic(String uid, String picUploadRecordId) {
+        this.uid = uid;
+        this.upload_records_key = picUploadRecordId;
     }
 
     public LastPic() {
     }
 
-    public String getUserId() {
-        return userId;
+    public String getUpload_records_key() {
+        return upload_records_key;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setUpload_records_key(String picUploadRecordId) {
+        this.upload_records_key = picUploadRecordId;
     }
-
-    public String getFirebaseURL() {
-        return firebaseURL;
-    }
-
-    public void setFirebaseURL(String firebaseURL) {
-        this.firebaseURL = firebaseURL;
-    }
-
-    public String getDeviceURL() {
-        return deviceURL;
-    }
-
-    public void setDeviceURL(String deviceURL) {
-        this.deviceURL = deviceURL;
-    }
-
-    public int getLikes() {
-        return likes;
-    }
-
-    public void setLikes(int likes) {
-        this.likes = likes;
-    }
-
-    public String getDateUpdated() {
-        return dateUpdated;
-    }
-
-    public void setDateUpdated(String dateUpdated) {
-        this.dateUpdated = dateUpdated;
-    }
-
 }

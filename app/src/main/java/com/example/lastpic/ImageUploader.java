@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import com.example.lastpic.Model.AndroidId;
 import com.example.lastpic.Model.LastPic;
+import com.example.lastpic.Model.PicUploadRecord;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -254,14 +255,22 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
     private void writeToFirebase(UploadTask.TaskSnapshot taskSnapshot) {
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("last_pic");
+        DatabaseReference myRef = database.getReference("upload_records");
 
         String firebaseURL = taskSnapshot.getDownloadUrl().toString();
 
-        String androidId = AndroidId.getAndroidId(activity);
-        LastPic lastPic = new LastPic(androidId, firebaseURL, filePath, 0, Instant.now().toString());
+        final String androidId = AndroidId.getAndroidId(activity);
+        String newKeyToUploadImage = myRef.push().getKey();
+        PicUploadRecord picUploadRecord = new PicUploadRecord(
+                androidId,
+                0,
+                firebaseURL,
+                filePath,
+                Instant.now().toString());
+        myRef.child(newKeyToUploadImage).setValue(picUploadRecord);
 
-        myRef.child(androidId).setValue(lastPic);
+        // update the update key for the user
+        database.getReference("last_pic").child(androidId).setValue(new LastPic(androidId, newKeyToUploadImage));
 
         Toast.makeText(activity, "Your last picture is uploaded!", Toast.LENGTH_SHORT).show();
         Bundle bundle = new Bundle();

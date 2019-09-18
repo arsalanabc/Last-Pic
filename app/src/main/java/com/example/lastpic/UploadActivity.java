@@ -9,7 +9,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 
 import com.example.lastpic.Model.AndroidId;
-import com.example.lastpic.Model.LastPic;
+import com.example.lastpic.Model.PicUploadRecord;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -51,7 +51,6 @@ public class UploadActivity extends Activity {
             String imagePath = imageCursor.getString(columnIndex);
             File imageFile = new File(imagePath);
 
-
             if (imageFile.canRead() && imageFile.exists()) {
                 sendToGoogleAnalytics("IMAGE_FOUND");
 
@@ -65,23 +64,35 @@ public class UploadActivity extends Activity {
 
     private void checkIfImageNeedsToBeUpdated(final String currentImagePath){
         String userId = AndroidId.getAndroidId(this);
-        Query query = dbRef.child("last_pic").orderByChild("userId").equalTo(userId);
+        Query query = dbRef.child("last_pic/"+userId).child("upload_records_key");
 
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot.getChildrenCount() == 0){
+            public void onDataChange(DataSnapshot userSnapshot) {
+
+                if(userSnapshot.getValue() == null){
                     updateImage(currentImagePath);
                 } else {
-                    for (DataSnapshot data : dataSnapshot.getChildren()) {
-                        if(!data.getValue(LastPic.class)
-                                .getDeviceURL().equals(currentImagePath)
-                        ){
-                            updateImage(currentImagePath);
-                        } else {
-                            noUpdateNeeded();
+                    String key = userSnapshot.getValue().toString();
+                    Query queryForRecord = dbRef.child("upload_records").child(key);
+                    queryForRecord.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot data) {
+                            System.out.println(data);
+                            if(!data.getValue(PicUploadRecord.class)
+                                    .getDeviceURL().equals(currentImagePath)
+                            ){
+                                updateImage(currentImagePath);
+                            } else {
+                                noUpdateNeeded();
+                            }
                         }
-                    }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
                 }
             }
 

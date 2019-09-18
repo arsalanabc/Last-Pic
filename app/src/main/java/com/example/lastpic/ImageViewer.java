@@ -3,11 +3,12 @@ package com.example.lastpic;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.ImageView;
 
-import com.example.lastpic.Model.LastPic;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.example.lastpic.Model.AndroidId;
+import com.example.lastpic.Model.PicUploadRecord;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -31,13 +32,14 @@ public class ImageViewer extends AppCompatActivity {
     String deviceBrand = android.os.Build.MANUFACTURER;
     String deviceModel = android.os.Build.MODEL;
     String osVersion = android.os.Build.VERSION.RELEASE;
-    List<LastPic> imageModels = new ArrayList<>();
+    List<PicUploadRecord> imageModels = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
 
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+        firebaseDatabase = FirebaseDatabase.getInstance().getReference();
 
         hideBar();
         setContentView(R.layout.image_viewer);
@@ -110,20 +112,36 @@ public class ImageViewer extends AppCompatActivity {
     }
 
     public void fetchImagesFromFirebase() {
+
         //Firebase
-        firebaseDatabase = FirebaseDatabase.getInstance().getReference().child("last_pic");
-        firebaseDatabase.addValueEventListener(new ValueEventListener() {
+        firebaseDatabase.child("last_pic").addListenerForSingleValueEvent(
+                new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                imageModels = new ArrayList<>();
 
                 for (DataSnapshot userSnapshot: dataSnapshot.getChildren()) {
-                    LastPic pic =userSnapshot.getValue(LastPic.class);
-                    imageModels.add(pic);
-                    Log.d("images-id", userSnapshot.getKey()+this.toString());
-                }
 
-                displayImages();
+                    if(!userSnapshot.getKey().equals(AndroidId.getAndroidId(ImageViewer.this))){
+
+                        String keyToPic = userSnapshot.child("upload_records_key").getValue().toString();
+
+                        firebaseDatabase.child("upload_records").child(keyToPic)
+                                .addValueEventListener(new ValueEventListener() {
+
+                                    @Override
+                                    public void onDataChange(DataSnapshot pictureSnapshot) {
+                                        PicUploadRecord pic = pictureSnapshot.getValue(PicUploadRecord.class);
+                                        imageModels.add(pic);
+                                        displayImages();
+                                    }
+
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+
+                                    }
+                                });
+                    }
+                }
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
@@ -138,7 +156,7 @@ public class ImageViewer extends AppCompatActivity {
                 //.transition(DrawableTransitionOptions.withCrossFade())
                 //.apply(options)
                 //.dontAnimate()
-//                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                 //.centerCrop()
                 .into(imageView);
     }
