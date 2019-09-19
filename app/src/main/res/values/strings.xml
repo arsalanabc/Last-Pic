@@ -7,6 +7,7 @@
     <string name="skip">SKIP</string>
     <string name="start">START</string>
     <string name="previous">PREVIOUS</string>
+    <string name="close">CLOSE</string>
 
     <string name="slide_1_title">What is Last Pic?</string>
     <string name="slide_1_desc">Last Pic is a simple app that shares the last picture you took. See what the world captures on their phone.</string>
