@@ -1,12 +1,19 @@
 package com.example.lastpic;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
+import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.example.lastpic.Model.AndroidId;
 import com.example.lastpic.Model.PicUploadRecord;
 import com.google.android.gms.analytics.HitBuilders;
@@ -33,6 +40,7 @@ public class ImageViewer extends AppCompatActivity {
     String deviceModel = android.os.Build.MODEL;
     String osVersion = android.os.Build.VERSION.RELEASE;
     List<PicUploadRecord> imageModels = new ArrayList<>();
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -44,6 +52,8 @@ public class ImageViewer extends AppCompatActivity {
         hideBar();
         setContentView(R.layout.image_viewer);
         imageView = findViewById(R.id.imageview);
+        progressBar = (ProgressBar) findViewById(R.id.progress);
+
 
         // Obtain the shared Tracker instance.
         AnalyticsApplication application = (AnalyticsApplication) getApplication();
@@ -151,6 +161,7 @@ public class ImageViewer extends AppCompatActivity {
     }
 
     private void displayImages() {
+        progressBar.setVisibility(View.VISIBLE);
         GlideApp.with(getApplicationContext())
                 .load(imageModels.get(index).getFirebaseURL())
                 //.transition(DrawableTransitionOptions.withCrossFade())
@@ -158,6 +169,19 @@ public class ImageViewer extends AppCompatActivity {
                 //.dontAnimate()
                 .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                 //.centerCrop()
+                .listener(new RequestListener<Drawable>() {
+                    @Override
+                    public boolean onLoadFailed(GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                        progressBar.setVisibility(View.GONE);
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                        progressBar.setVisibility(View.GONE);
+                        return false;
+                    }
+                })
                 .into(imageView);
     }
 }
