@@ -114,7 +114,7 @@ public class ImageViewer extends AppCompatActivity {
     public void fetchImagesFromFirebase() {
 
         //Firebase
-        firebaseDatabase.child("last_pic").addListenerForSingleValueEvent(
+        firebaseDatabase.child("last_pic").orderByChild("timeStamp").addListenerForSingleValueEvent(
                 new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
