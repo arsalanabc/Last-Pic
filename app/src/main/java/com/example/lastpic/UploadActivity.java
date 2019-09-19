@@ -7,7 +7,11 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 
+import com.example.lastpic.Managers.ConnectionManager;
 import com.example.lastpic.Model.AndroidId;
 import com.example.lastpic.Model.PicUploadRecord;
 import com.google.android.gms.analytics.HitBuilders;
@@ -28,11 +32,20 @@ public class UploadActivity extends Activity {
     private DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
     private Tracker mTracker;
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+
+        this.setContentView(R.layout.upload_activity);
+        TextView textView = findViewById(R.id.warning);
+        Button closeButton = findViewById(R.id.app_close_btn);
+        closeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                closeApp();
+            }
+        });
 
         // Obtain the shared Tracker instance.
         AnalyticsApplication application = (AnalyticsApplication) getApplication();
@@ -55,11 +68,20 @@ public class UploadActivity extends Activity {
                 sendToGoogleAnalytics("IMAGE_FOUND");
 
                 // we have found the latest picture in the public folder, do whatever you want
+                ConnectionManager connectionManager = new ConnectionManager(this);
+                if(connectionManager.isConnected()){
                 checkIfImageNeedsToBeUpdated(imagePath);
-                startActivity(new Intent(this, ImageViewer.class));
+                startActivity(new Intent(this, ImageViewer.class));}
+                else{
+                    textView.setText("No Internet Connection!");
+                }
                 break;
             }
         }
+    }
+
+    private void closeApp() {
+        this.finish();
     }
 
     private void checkIfImageNeedsToBeUpdated(final String currentImagePath){
