@@ -45,6 +45,7 @@ public abstract class RunTimePermission extends AppCompatActivity {
             permissionCheck = permissionCheck + permission;
         }
         if ((grantResults.length > 0) && permissionCheck == PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(this, "Permissions Received.", Toast.LENGTH_LONG).show();
             onPermissionsGranted(requestCode);
         } else {
             Toast.makeText(this, "Permissions denied", Toast.LENGTH_LONG).show();
@@ -67,7 +68,6 @@ public abstract class RunTimePermission extends AppCompatActivity {
 
     public void onPermissionsGranted(final int requestCode) {
         if(!alreadyApproved){
-            Toast.makeText(this, "Permissions Received.", Toast.LENGTH_LONG).show();
             sendToGoogleAnalytics("APPROVED");
             Intent uploadImage = new Intent(RunTimePermission.this, UploadActivity.class);
             RunTimePermission.this.startActivity(uploadImage);
