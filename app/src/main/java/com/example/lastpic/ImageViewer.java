@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -56,6 +57,13 @@ public class ImageViewer extends AppCompatActivity {
         imageView = findViewById(R.id.imageview);
         progressBar = (ProgressBar) findViewById(R.id.progress);
         likesTextView = findViewById(R.id.likes);
+
+        likesTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getApplicationContext(),"liked",Toast.LENGTH_SHORT).show();
+            }
+        });
 
         // Obtain the shared Tracker instance.
         AnalyticsApplication application = (AnalyticsApplication) getApplication();
