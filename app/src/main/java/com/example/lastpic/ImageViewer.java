@@ -8,6 +8,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -41,6 +42,7 @@ public class ImageViewer extends AppCompatActivity {
     String osVersion = android.os.Build.VERSION.RELEASE;
     List<PicUploadRecord> imageModels = new ArrayList<>();
     private ProgressBar progressBar;
+    private TextView likesTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -53,7 +55,7 @@ public class ImageViewer extends AppCompatActivity {
         setContentView(R.layout.image_viewer);
         imageView = findViewById(R.id.imageview);
         progressBar = (ProgressBar) findViewById(R.id.progress);
-
+        likesTextView = findViewById(R.id.likes);
 
         // Obtain the shared Tracker instance.
         AnalyticsApplication application = (AnalyticsApplication) getApplication();
@@ -142,6 +144,7 @@ public class ImageViewer extends AppCompatActivity {
                                     public void onDataChange(DataSnapshot pictureSnapshot) {
                                         PicUploadRecord pic = pictureSnapshot.getValue(PicUploadRecord.class);
                                         imageModels.add(pic);
+                                        likesTextView.setText(String.valueOf(pic.getLikes()));
                                         displayImages();
                                     }
 

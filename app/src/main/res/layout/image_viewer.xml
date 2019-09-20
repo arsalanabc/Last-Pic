@@ -16,4 +16,14 @@
         android:layout_centerInParent="true"
         android:visibility="visible" />
 
+    <EditText
+        android:id="@+id/likes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:ems="10"
+        android:inputType="number"
+        android:textColor="#FFD600" />
+
 </RelativeLayout>
