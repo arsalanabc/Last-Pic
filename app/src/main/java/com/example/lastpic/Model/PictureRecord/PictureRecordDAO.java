@@ -36,22 +36,23 @@ public class PictureRecordDAO {
     }
 
     public void likeAPicture(final PicUploadRecord picRecord){
-        firebaseDatabaseRef.child(LIKES)
-                .orderByChild(USER_LIKED_PIC).equalTo(AndroidId.AndroidId()+picRecord.getKey())
+        firebaseDatabaseRef.child(LIKES).child(AndroidId.AndroidId())
+                .orderByChild(USER_LIKED_PIC).equalTo(picRecord.getKey())
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         if(dataSnapshot.getValue() == null){
 
-                            for (PicUploadRecord pic: records.values()
-                            ) {
+                            for (PicUploadRecord pic: getAll()) {
 //                      Log.d("pic",String.valueOf(pic.getLikes()));
                                 if(pic.getKey() == picRecord.getKey()){
                                     pic.setLikes(pic.getLikes()+1);
                                     update(pic);
                                     Map<String,String> map = new HashMap<>();
-                                    map.put(USER_LIKED_PIC,AndroidId.AndroidId()+picRecord.getKey());
-                                    firebaseDatabaseRef.child(LIKES).push().setValue(map);
+                                    map.put(USER_LIKED_PIC, picRecord.getKey());
+                                    firebaseDatabaseRef
+                                            .child(LIKES)
+                                            .child(AndroidId.AndroidId()).push().setValue(map);
                                 }
                             }
                         }
@@ -66,6 +67,10 @@ public class PictureRecordDAO {
 
     public void update(PicUploadRecord picUploadRecord){
         firebaseDatabaseRef.child(UPLOAD_RECORDS).child(picUploadRecord.getKey()).setValue(picUploadRecord);
+    }
+
+    public void save(PicUploadRecord picUploadRecord){
+        firebaseDatabaseRef.child(UPLOAD_RECORDS).push().setValue(picUploadRecord);
     }
 
 }
