@@ -85,8 +85,7 @@ public class UploadActivity extends Activity {
     }
 
     private void checkIfImageNeedsToBeUpdated(final String currentImagePath){
-        String userId = AndroidId.getAndroidId(this);
-        Query query = dbRef.child("last_pic/"+userId).child("upload_records_key");
+        Query query = dbRef.child("last_pic/"+AndroidId.USER_ANDROID_ID).child("upload_records_key");
 
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

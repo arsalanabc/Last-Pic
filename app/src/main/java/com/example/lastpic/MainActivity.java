@@ -4,6 +4,7 @@ import android.Manifest;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 
+import com.example.lastpic.Model.AndroidId;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 
@@ -27,6 +28,7 @@ public class MainActivity extends RunTimePermission {
                 .setLabel("ENTERED")
                 .build());
 
+        AndroidId.setUserAndroidId(this);
         MainActivity.super.requestAppPermissions(Manifest.permission.READ_EXTERNAL_STORAGE,
                 REQUEST_PERMISSIONS);
     }

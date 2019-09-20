@@ -36,7 +36,7 @@ public class PictureRecordDAO {
     }
 
     public void likeAPicture(final PicUploadRecord picRecord){
-        firebaseDatabaseRef.child(LIKES).child(AndroidId.AndroidId())
+        firebaseDatabaseRef.child(LIKES).child(AndroidId.USER_ANDROID_ID)
                 .orderByChild(USER_LIKED_PIC).equalTo(picRecord.getKey())
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -52,7 +52,7 @@ public class PictureRecordDAO {
                                     map.put(USER_LIKED_PIC, picRecord.getKey());
                                     firebaseDatabaseRef
                                             .child(LIKES)
-                                            .child(AndroidId.AndroidId()).push().setValue(map);
+                                            .child(AndroidId.USER_ANDROID_ID).push().setValue(map);
                                 }
                             }
                         }

@@ -259,11 +259,10 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
 
         String firebaseURL = taskSnapshot.getDownloadUrl().toString();
 
-        final String androidId = AndroidId.getAndroidId(activity);
         String newKeyToUploadImage = myRef.push().getKey();
         Instant updateTimeStamp = Instant.now();
         PicUploadRecord picUploadRecord = new PicUploadRecord(
-                androidId,
+                AndroidId.USER_ANDROID_ID,
                 0,
                 firebaseURL,
                 filePath,
@@ -271,12 +270,12 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
         myRef.child(newKeyToUploadImage).setValue(picUploadRecord);
 
         // update the update key for the user
-        database.getReference("last_pic").child(androidId).setValue(
+        database.getReference("last_pic").child(AndroidId.USER_ANDROID_ID).setValue(
                 new LastPic(newKeyToUploadImage, updateTimeStamp.getEpochSecond()*-1));
 
         Toast.makeText(activity, "Your last picture is uploaded!", Toast.LENGTH_SHORT).show();
         Bundle bundle = new Bundle();
-        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, androidId);
+        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, AndroidId.USER_ANDROID_ID);
         bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "pic_updates");
         setFirebaseAnalytics(bundle);
 

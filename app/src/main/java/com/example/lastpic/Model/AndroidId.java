@@ -1,20 +1,14 @@
 package com.example.lastpic.Model;
 
-import android.app.Activity;
 import android.provider.Settings;
 
+import com.example.lastpic.MainActivity;
+
 public class AndroidId {
-    static String id;
+    public static String USER_ANDROID_ID;
 
-    public static String getAndroidId(Activity activity) {
-
-        id = Settings.Secure.getString(activity.getContentResolver(),
-        Settings.Secure.ANDROID_ID);
-        return id;
+    public static void setUserAndroidId(MainActivity mainActivity) {
+        USER_ANDROID_ID = Settings.Secure.getString(mainActivity.getContentResolver(),
+                Settings.Secure.ANDROID_ID);
     }
-
-    public static String AndroidId (){
-        return id;
-    }
-
 }

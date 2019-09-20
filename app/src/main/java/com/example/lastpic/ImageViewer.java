@@ -146,7 +146,7 @@ public class ImageViewer extends AppCompatActivity {
 
                 for (DataSnapshot userSnapshot: dataSnapshot.getChildren()) {
 
-                    if(!userSnapshot.getKey().equals(AndroidId.getAndroidId(ImageViewer.this))){
+                    if(!userSnapshot.getKey().equals(AndroidId.USER_ANDROID_ID)){
 
                         String keyToPic = userSnapshot.child("upload_records_key").getValue().toString();
 
