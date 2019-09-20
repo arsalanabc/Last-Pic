@@ -59,12 +59,14 @@ public class ImageViewer extends AppCompatActivity {
         imageView = findViewById(R.id.imageview);
         progressBar = (ProgressBar) findViewById(R.id.progress);
         likesTextView = findViewById(R.id.likes);
-        pictureRecordDAO = new PictureRecordDAO();
+        pictureRecordDAO = new PictureRecordDAO(firebaseDatabase.getDatabase());
 
         likesTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                like();
+                PicUploadRecord pic = imageModels.get(index);
+                pictureRecordDAO.likeAPicture(pic);
+                pic.setLikes(pic.getLikes());
             }
         });
 
@@ -78,36 +80,6 @@ public class ImageViewer extends AppCompatActivity {
                 .build());
 
         fetchImagesFromFirebase();
-    }
-
-    private void like() {
-        class LikeDAO {
-            String userId;
-            String picRecordId;
-
-            public LikeDAO() {
-            }
-
-            public String getUserId() {
-                return userId;
-            }
-
-            public void setUserId(String userId) {
-                this.userId = userId;
-            }
-
-            public String getPicRecordId() {
-                return picRecordId;
-            }
-
-            public void setPicRecordId(String picRecordId) {
-                this.picRecordId = picRecordId;
-            }
-        }
-        PicUploadRecord pic = imageModels.get(index);
-        pic.setLikes(pic.getLikes()+1);
-        firebaseDatabase.child("upload_records").child(pic.getKey()).setValue(pic);
-
     }
 
     private void hideBar() {
@@ -207,7 +179,6 @@ public class ImageViewer extends AppCompatActivity {
 
     private void displayImages() {
         PicUploadRecord pictureRecord = imageModels.get(index);
-        pictureRecordDAO.likeAPicture(pictureRecord);
         likesTextView.setText(String.valueOf(pictureRecord.getLikes()));
 
         progressBar.setVisibility(View.VISIBLE);
