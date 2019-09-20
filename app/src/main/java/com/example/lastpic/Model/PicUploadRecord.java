@@ -1,6 +1,7 @@
 package com.example.lastpic.Model;
 
 public class PicUploadRecord {
+    private String key;
     private String userId;
     private String timeStamp;
     private String deviceURL;
@@ -55,5 +56,13 @@ public class PicUploadRecord {
 
     public String getDeviceURL() {
         return deviceURL;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 }

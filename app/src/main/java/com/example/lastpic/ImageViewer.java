@@ -61,7 +61,7 @@ public class ImageViewer extends AppCompatActivity {
         likesTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getApplicationContext(),"liked",Toast.LENGTH_SHORT).show();
+                like();
             }
         });
 
@@ -75,6 +75,36 @@ public class ImageViewer extends AppCompatActivity {
                 .build());
 
         fetchImagesFromFirebase();
+    }
+
+    private void like() {
+        class LikeDAO {
+            String userId;
+            String picRecordId;
+
+            public LikeDAO() {
+            }
+
+            public String getUserId() {
+                return userId;
+            }
+
+            public void setUserId(String userId) {
+                this.userId = userId;
+            }
+
+            public String getPicRecordId() {
+                return picRecordId;
+            }
+
+            public void setPicRecordId(String picRecordId) {
+                this.picRecordId = picRecordId;
+            }
+        }
+        PicUploadRecord pic = imageModels.get(index);
+        pic.setLikes(pic.getLikes()+1);
+        firebaseDatabase.child("upload_records").child(pic.getKey()).setValue(pic);
+
     }
 
     private void hideBar() {
@@ -151,6 +181,7 @@ public class ImageViewer extends AppCompatActivity {
                                     @Override
                                     public void onDataChange(DataSnapshot pictureSnapshot) {
                                         PicUploadRecord pic = pictureSnapshot.getValue(PicUploadRecord.class);
+                                        pic.setKey(pictureSnapshot.getKey());
                                         imageModels.add(pic);
                                         likesTextView.setText(String.valueOf(pic.getLikes()));
                                         displayImages();
