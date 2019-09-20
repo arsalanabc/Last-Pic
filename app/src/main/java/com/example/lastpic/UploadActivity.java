@@ -126,7 +126,7 @@ public class UploadActivity extends Activity {
 
     private void noUpdateNeeded() {
         sendToGoogleAnalytics("NO_UPLOAD_NEEDED");
-        this.finish();
+        closeApp();
     }
 
     private void updateImage(String imagePath) {
