@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 import com.example.lastpic.Managers.ConnectionManager;
 import com.example.lastpic.Model.AndroidId;
-import com.example.lastpic.Model.PicUploadRecord;
+import com.example.lastpic.Model.PictureRecord.PicUploadRecord;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.google.firebase.analytics.FirebaseAnalytics;

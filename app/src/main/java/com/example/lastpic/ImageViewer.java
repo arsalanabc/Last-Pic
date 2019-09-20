@@ -1,5 +1,6 @@
 package com.example.lastpic;
 
+import android.graphics.Picture;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -9,7 +10,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -17,7 +17,8 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.example.lastpic.Model.AndroidId;
-import com.example.lastpic.Model.PicUploadRecord;
+import com.example.lastpic.Model.PictureRecord.PicUploadRecord;
+import com.example.lastpic.Model.PictureRecord.PictureRecordDAO;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -44,6 +45,7 @@ public class ImageViewer extends AppCompatActivity {
     List<PicUploadRecord> imageModels = new ArrayList<>();
     private ProgressBar progressBar;
     private TextView likesTextView;
+    private PictureRecordDAO pictureRecordDAO;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -57,6 +59,7 @@ public class ImageViewer extends AppCompatActivity {
         imageView = findViewById(R.id.imageview);
         progressBar = (ProgressBar) findViewById(R.id.progress);
         likesTextView = findViewById(R.id.likes);
+        pictureRecordDAO = new PictureRecordDAO();
 
         likesTextView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -183,7 +186,7 @@ public class ImageViewer extends AppCompatActivity {
                                         PicUploadRecord pic = pictureSnapshot.getValue(PicUploadRecord.class);
                                         pic.setKey(pictureSnapshot.getKey());
                                         imageModels.add(pic);
-                                        likesTextView.setText(String.valueOf(pic.getLikes()));
+                                        pictureRecordDAO.add(pic);
                                         displayImages();
                                     }
 
@@ -203,9 +206,13 @@ public class ImageViewer extends AppCompatActivity {
     }
 
     private void displayImages() {
+        PicUploadRecord pictureRecord = imageModels.get(index);
+        pictureRecordDAO.likeAPicture(pictureRecord);
+        likesTextView.setText(String.valueOf(pictureRecord.getLikes()));
+
         progressBar.setVisibility(View.VISIBLE);
         GlideApp.with(getApplicationContext())
-                .load(imageModels.get(index).getFirebaseURL())
+                .load(pictureRecord.getFirebaseURL())
                 //.transition(DrawableTransitionOptions.withCrossFade())
                 //.apply(options)
                 //.dontAnimate()
