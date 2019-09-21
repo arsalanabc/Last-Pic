@@ -1,4 +1,4 @@
-package com.example.lastpic;
+package com.skeedo.lastpic;
 /*
  * Copyright Google Inc. All Rights Reserved.
  *

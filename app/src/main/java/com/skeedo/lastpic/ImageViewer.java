@@ -1,6 +1,5 @@
-package com.example.lastpic;
+package com.skeedo.lastpic;
 
-import android.graphics.Picture;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -16,9 +15,9 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
-import com.example.lastpic.Model.AndroidId;
-import com.example.lastpic.Model.PictureRecord.PicUploadRecord;
-import com.example.lastpic.Model.PictureRecord.PictureRecordDAO;
+import com.skeedo.lastpic.Model.AndroidId;
+import com.skeedo.lastpic.Model.PictureRecord.PicUploadRecord;
+import com.skeedo.lastpic.Model.PictureRecord.PictureRecordDAO;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.google.firebase.analytics.FirebaseAnalytics;

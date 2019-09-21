@@ -1,4 +1,4 @@
-package com.example.lastpic.Model.PictureRecord;
+package com.skeedo.lastpic.Model.PictureRecord;
 
 public class PicUploadRecord {
     private String key;

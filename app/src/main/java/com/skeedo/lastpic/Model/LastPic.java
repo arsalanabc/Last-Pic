@@ -1,4 +1,4 @@
-package com.example.lastpic.Model;
+package com.skeedo.lastpic.Model;
 
 public class LastPic {
     private long timeStamp;

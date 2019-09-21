@@ -1,4 +1,4 @@
-package com.example.lastpic.Managers;
+package com.skeedo.lastpic.Managers;
 
 import android.content.Context;
 import android.content.SharedPreferences;
