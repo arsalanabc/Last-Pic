@@ -1,4 +1,4 @@
-package com.example.lastpic;
+package com.skeedo.lastpic;
 
 import android.app.Activity;
 import android.database.Cursor;
@@ -19,9 +19,9 @@ import android.util.Log;
 import android.widget.Toast;
 
 
-import com.example.lastpic.Model.AndroidId;
-import com.example.lastpic.Model.LastPic;
-import com.example.lastpic.Model.PictureRecord.PicUploadRecord;
+import com.skeedo.lastpic.Model.AndroidId;
+import com.skeedo.lastpic.Model.LastPic;
+import com.skeedo.lastpic.Model.PictureRecord.PicUploadRecord;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;

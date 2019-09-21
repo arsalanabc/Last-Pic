@@ -1,4 +1,4 @@
-package com.example.lastpic;
+package com.skeedo.lastpic;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -11,9 +11,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.example.lastpic.Managers.ConnectionManager;
-import com.example.lastpic.Model.AndroidId;
-import com.example.lastpic.Model.PictureRecord.PicUploadRecord;
+import com.skeedo.lastpic.Managers.ConnectionManager;
+import com.skeedo.lastpic.Model.AndroidId;
+import com.skeedo.lastpic.Model.PictureRecord.PicUploadRecord;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.google.firebase.analytics.FirebaseAnalytics;

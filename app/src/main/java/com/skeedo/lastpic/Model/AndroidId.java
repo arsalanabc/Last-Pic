@@ -1,8 +1,8 @@
-package com.example.lastpic.Model;
+package com.skeedo.lastpic.Model;
 
 import android.provider.Settings;
 
-import com.example.lastpic.MainActivity;
+import com.skeedo.lastpic.MainActivity;
 
 public class AndroidId {
     public static String USER_ANDROID_ID;

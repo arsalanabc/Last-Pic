@@ -1,4 +1,4 @@
-package com.example.lastpic;
+package com.skeedo.lastpic;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
