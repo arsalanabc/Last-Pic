@@ -1,10 +1,10 @@
-package com.example.lastpic;
+package com.skeedo.lastpic;
 
 import android.Manifest;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 
-import com.example.lastpic.Model.AndroidId;
+import com.skeedo.lastpic.Model.AndroidId;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 

@@ -1,6 +1,6 @@
-package com.example.lastpic.Model.PictureRecord;
+package com.skeedo.lastpic.Model.PictureRecord;
 
-import com.example.lastpic.Model.AndroidId;
+import com.skeedo.lastpic.Model.AndroidId;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;

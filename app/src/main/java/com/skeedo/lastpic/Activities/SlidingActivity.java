@@ -1,4 +1,4 @@
-package com.example.lastpic.Activities;
+package com.skeedo.lastpic.Activities;
 
 import android.content.Context;
 import android.content.Intent;
@@ -16,10 +16,10 @@ import android.support.v4.view.ViewPager;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.example.lastpic.AnalyticsApplication;
-import com.example.lastpic.MainActivity;
-import com.example.lastpic.Managers.PreferenceManager;
-import com.example.lastpic.R;
+import com.skeedo.lastpic.AnalyticsApplication;
+import com.skeedo.lastpic.MainActivity;
+import com.skeedo.lastpic.Managers.PreferenceManager;
+import com.skeedo.lastpic.R;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 

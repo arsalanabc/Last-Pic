@@ -1,4 +1,4 @@
-package com.example.lastpic.Activities;
+package com.skeedo.lastpic.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -6,8 +6,8 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
-import com.example.lastpic.AnalyticsApplication;
-import com.example.lastpic.R;
+import com.skeedo.lastpic.AnalyticsApplication;
+import com.skeedo.lastpic.R;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 
