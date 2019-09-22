@@ -41,6 +41,8 @@ public class ImageViewer extends AppCompatActivity {
     private FirebaseAnalytics mFirebaseAnalytics;
     private Tracker mTracker;
     final int PRELOAD_IMAGES_NUM = 2;
+    final int LIKE_LAYOUT = R.layout.toast_like_layout;
+    final int UNLIKE_LAYOUT = R.layout.toast_unlike_layout;
 
     List<PicUploadRecord> imageModels = new ArrayList<>();
     private ProgressBar progressBar;
@@ -204,9 +206,15 @@ public class ImageViewer extends AppCompatActivity {
                 .into(imageView);
     }
 
-    public void showLikeToast() {
+    public void showLikeToast(String action) {
         LayoutInflater layoutInflater = getLayoutInflater();
-        View view = layoutInflater.inflate(R.layout.toast_like_layout,null);
+        View view;
+       if(action.equals("LIKE")){
+           view =layoutInflater.inflate(LIKE_LAYOUT,null);
+       } else {
+           view = layoutInflater.inflate(UNLIKE_LAYOUT,null);
+       }
+
         Toast toast = new Toast(this);
         toast.setView(view);
         toast.setDuration(Toast.LENGTH_SHORT);

@@ -66,8 +66,8 @@ public class PictureRecordDAO {
         firebaseDatabaseRef.child(UPLOAD_RECORDS).push().setValue(picUploadRecord);
     }
 
-    private void userActionUpdate(String unlike, PicUploadRecord picture) {
-        switch (unlike){
+    private void userActionUpdate(String action, PicUploadRecord picture) {
+        switch (action){
             case "UNLIKE":
             {
                 updateLikes(picture, -1);
@@ -87,13 +87,13 @@ public class PictureRecordDAO {
                         .child(AndroidId.USER_ANDROID_ID)
                         .child(picture.getKey())
                         .setValue(pictureLiked);
-
-                imageViewer.showLikeToast();
                 break;
             }
             default:{
             }
         }
+
+        imageViewer.showLikeToast(action);
     }
 
     private void updateLikes(PicUploadRecord picRecord, int like) {
