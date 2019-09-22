@@ -38,32 +38,16 @@ public class PictureRecordDAO {
         return new ArrayList<>(records.values());
     }
 
-    public void likeAPicture(final PicUploadRecord picRecord){
+    public void likeOrUnlike(final PicUploadRecord picRecord){
         firebaseDatabaseRef.child(LIKES).child(AndroidId.USER_ANDROID_ID)
                 .child(picRecord.getKey())
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         if(dataSnapshot.getValue() == null){
-                            picRecord.setLikes(picRecord.getLikes()+1);
-                            update(picRecord);
-
-                            Map<String, Boolean> pictureLiked = new HashMap<>();
-                            pictureLiked.put(USER_LIKED_PIC, true);
-
-                            firebaseDatabaseRef
-                                    .child(LIKES)
-                                    .child(AndroidId.USER_ANDROID_ID)
-                                    .child(picRecord.getKey())
-                                    .setValue(pictureLiked);
-
-                            imageViewer.showLikeToast();
+                            userActionUpdate("LIKE", picRecord);
                         } else {
-                            picRecord.setLikes(picRecord.getLikes()-1);
-                            update(picRecord);
-                            firebaseDatabaseRef
-                                    .child(LIKES)
-                                    .child(AndroidId.USER_ANDROID_ID).child(picRecord.getKey()).removeValue();
+                            userActionUpdate("UNLIKE", picRecord);
                         }
                     }
 
@@ -81,4 +65,40 @@ public class PictureRecordDAO {
     public void save(PicUploadRecord picUploadRecord){
         firebaseDatabaseRef.child(UPLOAD_RECORDS).push().setValue(picUploadRecord);
     }
+
+    private void userActionUpdate(String unlike, PicUploadRecord picture) {
+        switch (unlike){
+            case "UNLIKE":
+            {
+                updateLikes(picture, -1);
+                firebaseDatabaseRef
+                        .child(LIKES)
+                        .child(AndroidId.USER_ANDROID_ID).child(picture.getKey()).removeValue();
+                break;
+            }
+            case "LIKE":
+            {
+                updateLikes(picture, 1);
+                Map<String, Boolean> pictureLiked = new HashMap<>();
+                pictureLiked.put(USER_LIKED_PIC, true);
+
+                firebaseDatabaseRef
+                        .child(LIKES)
+                        .child(AndroidId.USER_ANDROID_ID)
+                        .child(picture.getKey())
+                        .setValue(pictureLiked);
+
+                imageViewer.showLikeToast();
+                break;
+            }
+            default:{
+            }
+        }
+    }
+
+    private void updateLikes(PicUploadRecord picRecord, int like) {
+        picRecord.setLikes(picRecord.getLikes() + like);
+        update(picRecord);
+    }
+
 }
