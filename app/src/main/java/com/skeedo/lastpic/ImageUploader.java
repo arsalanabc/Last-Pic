@@ -16,6 +16,9 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 
@@ -161,7 +164,8 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
             if (scaledBitmap != null) {
                 ByteArrayOutputStream bytes = new ByteArrayOutputStream();
                 scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 80, bytes);
-                uploadImage(bytes);
+                showUploadToast(scaledBitmap);
+                //uploadImage(bytes);
             }
 
         } catch (Exception e) {
@@ -275,4 +279,20 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
         firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
     }
 
+    private void showUploadToast(Bitmap bmp) {
+        LayoutInflater layoutInflater = activity.getLayoutInflater();
+        final View view = layoutInflater.inflate(R.layout.toast_upload_image,null);
+        ImageView imageView = view.findViewById(R.id.upload_image);
+        imageView.setImageBitmap(bmp);
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast toast = new Toast(activity);
+                toast.setView(view);
+                toast.setDuration(Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        });
+
+    }
 }
