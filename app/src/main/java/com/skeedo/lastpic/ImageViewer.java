@@ -4,11 +4,13 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
@@ -57,7 +59,7 @@ public class ImageViewer extends AppCompatActivity {
         imageView = findViewById(R.id.imageview);
         progressBar = (ProgressBar) findViewById(R.id.progress);
         likesTextView = findViewById(R.id.likes);
-        pictureRecordDAO = new PictureRecordDAO(firebaseDatabase.getDatabase());
+        pictureRecordDAO = new PictureRecordDAO(firebaseDatabase.getDatabase(), this);
 
         likesTextView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -201,5 +203,14 @@ public class ImageViewer extends AppCompatActivity {
                     }
                 })
                 .into(imageView);
+    }
+
+    public void showLikeToast() {
+        LayoutInflater layoutInflater = getLayoutInflater();
+        View view = layoutInflater.inflate(R.layout.toast_like_layout,null);
+        Toast toast = new Toast(this);
+        toast.setView(view);
+        toast.setDuration(Toast.LENGTH_SHORT);
+        toast.show();
     }
 }
