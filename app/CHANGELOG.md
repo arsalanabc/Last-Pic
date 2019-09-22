@@ -2,8 +2,11 @@
 
 # All notable changes will be log in this file.
 
+## [1.0.1] - 2019-09-21
+### Changed
+- Compression dimensions fixed
 
-## [1.0.0] - 2019-09-21
+## [1.0.1] - 2019-09-21
 ### Added
 - Show the slides to inform user about the app
 - Request and store permission to read media

@@ -76,8 +76,8 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
 
             int actualHeight = options.outHeight;
             int actualWidth = options.outWidth;
-            float maxHeight = actualHeight * 0.6f; //4032f;
-            float maxWidth =  actualWidth * 0.6f; //4032f;
+            float maxHeight = Math.min(actualHeight, 1080f); //4032f;
+            float maxWidth =  Math.min(actualWidth, 1080f); //4032f;
             float imgRatio = actualWidth / actualHeight;
             float maxRatio = maxWidth / maxHeight;
 
@@ -160,7 +160,7 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
 
             if (scaledBitmap != null) {
                 ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-                scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 70, bytes);
+                scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 80, bytes);
                 uploadImage(bytes);
             }
 
@@ -206,10 +206,6 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
         byte[] data = bytes.toByteArray();
 
         if(data.length != 0){
-//            final ProgressDialog progressDialog = new ProgressDialog(activity);
-//            progressDialog.setTitle("Uploading...");
-//            progressDialog.show();
-
             StorageReference storageReference = FirebaseStorage.getInstance().getReference();
             StorageReference ref = storageReference.child("pictures/"+ UUID.randomUUID().toString());
 
@@ -219,8 +215,6 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
             uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-//                    progressDialog.dismiss();
-
                     writeToFirebase(taskSnapshot);
 
                 }
@@ -228,14 +222,10 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
                     .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                            double progress = (100.0*taskSnapshot.getBytesTransferred()/taskSnapshot
-                                    .getTotalByteCount());
-//                            progressDialog.setMessage("Uploaded "+(int)progress+"%");
                         }
                     }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
-//                    progressDialog.dismiss();
                     Toast.makeText(activity, "Failed "+e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
@@ -269,7 +259,6 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
                 updateTimeStamp.toString());
         myRef.child(newKeyToUploadImage).setValue(picUploadRecord);
 
-        // update the update key for the user
         database.getReference("last_pic").child(AndroidId.USER_ANDROID_ID).setValue(
                 new LastPic(newKeyToUploadImage, updateTimeStamp.getEpochSecond()*-1));
 
