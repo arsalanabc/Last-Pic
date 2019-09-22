@@ -10,14 +10,12 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
-import com.skeedo.lastpic.Model.AndroidId;
-import com.skeedo.lastpic.Model.PictureRecord.PicUploadRecord;
-import com.skeedo.lastpic.Model.PictureRecord.PictureRecordDAO;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -26,6 +24,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.skeedo.lastpic.Model.AndroidId;
+import com.skeedo.lastpic.Model.PictureRecord.PicUploadRecord;
+import com.skeedo.lastpic.Model.PictureRecord.PictureRecordDAO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,10 +38,8 @@ public class ImageViewer extends AppCompatActivity {
     private DatabaseReference firebaseDatabase;
     private FirebaseAnalytics mFirebaseAnalytics;
     private Tracker mTracker;
+    final int PRELOAD_IMAGES_NUM = 2;
 
-    String deviceBrand = android.os.Build.MANUFACTURER;
-    String deviceModel = android.os.Build.MODEL;
-    String osVersion = android.os.Build.VERSION.RELEASE;
     List<PicUploadRecord> imageModels = new ArrayList<>();
     private ProgressBar progressBar;
     private TextView likesTextView;
@@ -102,11 +101,10 @@ public class ImageViewer extends AppCompatActivity {
 
                 // reverse direction of rotation above the mid-line
                 if (x >= getWidth() / 2) {
-                   showToast("Touch on left");
-                   changeImage(1);
+                    preloadNextImages();
+                    changeImage(1);
                 }
                 else {
-                    showToast("Touch on right");
                    changeImage(-1);
                 }
         }
@@ -115,10 +113,6 @@ public class ImageViewer extends AppCompatActivity {
 
     public float getWidth(){
         return this.getWindowManager().getDefaultDisplay().getWidth();
-    }
-
-    public void showToast(String msg){
-        //Toast.makeText(getApplicationContext(),msg,Toast.LENGTH_SHORT).show();
     }
 
     public void changeImage(int ind){
@@ -131,13 +125,18 @@ public class ImageViewer extends AppCompatActivity {
         } else {
             index += ind;
         }
-
         displayImages();
+    }
+
+    private void preloadNextImages() {
+        for (int i = index; i < Math.min(index+PRELOAD_IMAGES_NUM, imageModels.size()-1); i++){
+            Glide.with(this.getApplicationContext()).load(imageModels.get(i+1).getFirebaseURL())
+                    .preload();
+        }
     }
 
     public void fetchImagesFromFirebase() {
 
-        //Firebase
         firebaseDatabase.child("last_pic").orderByChild("timeStamp").addListenerForSingleValueEvent(
                 new ValueEventListener() {
             @Override
