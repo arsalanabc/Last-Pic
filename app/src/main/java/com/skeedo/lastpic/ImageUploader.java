@@ -206,6 +206,7 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
     public String uploadImage (final Bitmap scaledImage){
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         scaledImage.compress(Bitmap.CompressFormat.JPEG, 80, bytes);
+        showUploadToast(scaledImage);
 
         byte[] data = bytes.toByteArray();
 
@@ -220,7 +221,6 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
                 @RequiresApi(api = Build.VERSION_CODES.O)
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    showUploadToast(scaledImage);
                     writeToFirebase(taskSnapshot);
                 }
             })
