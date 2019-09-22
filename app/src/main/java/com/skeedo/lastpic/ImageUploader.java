@@ -162,10 +162,7 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
             }
 
             if (scaledBitmap != null) {
-                ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-                scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 80, bytes);
-                showUploadToast(scaledBitmap);
-                //uploadImage(bytes);
+                uploadImage(scaledBitmap);
             }
 
         } catch (Exception e) {
@@ -206,7 +203,10 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
         }
     }
 
-    public String uploadImage (ByteArrayOutputStream bytes){
+    public String uploadImage (final Bitmap scaledImage){
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        scaledImage.compress(Bitmap.CompressFormat.JPEG, 80, bytes);
+
         byte[] data = bytes.toByteArray();
 
         if(data.length != 0){
@@ -217,10 +217,11 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
             Log.d("putBytes", "putting bytes");
             UploadTask uploadTask = ref.putBytes(data);
             uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @RequiresApi(api = Build.VERSION_CODES.O)
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    showUploadToast(scaledImage);
                     writeToFirebase(taskSnapshot);
-
                 }
             })
                     .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
