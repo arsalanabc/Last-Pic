@@ -65,8 +65,7 @@ public class ImageViewer extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 PicUploadRecord pic = imageModels.get(index);
-                pictureRecordDAO.likeAPicture(pic);
-                pic.setLikes(pic.getLikes());
+                pictureRecordDAO.likeOrUnlike(pic);
             }
         });
 
