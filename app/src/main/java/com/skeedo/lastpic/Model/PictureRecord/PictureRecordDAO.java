@@ -1,11 +1,12 @@
 package com.skeedo.lastpic.Model.PictureRecord;
 
-import com.skeedo.lastpic.Model.AndroidId;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.skeedo.lastpic.ImageViewer;
+import com.skeedo.lastpic.Model.AndroidId;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,9 +21,11 @@ public class PictureRecordDAO {
     final String LIKES = "likes";
 //    TODO Using an unspecified index. Consider adding '".indexOn": "user_liked_pic"' at likes to your security and Firebase Database rules for better performance
     final String USER_LIKED_PIC = "user_liked_pic";
+    private ImageViewer imageViewer;
 
 
-    public PictureRecordDAO(FirebaseDatabase firebaseDatabase){
+    public PictureRecordDAO(FirebaseDatabase firebaseDatabase, ImageViewer imageViewer){
+        this.imageViewer = imageViewer;
         records = new HashMap<>();
         this.firebaseDatabaseRef = firebaseDatabase.getInstance().getReference();
     }
@@ -53,6 +56,8 @@ public class PictureRecordDAO {
                                     firebaseDatabaseRef
                                             .child(LIKES)
                                             .child(AndroidId.USER_ANDROID_ID).push().setValue(map);
+
+                                    imageViewer.showLikeToast();
                                 }
                             }
                         }
@@ -72,5 +77,4 @@ public class PictureRecordDAO {
     public void save(PicUploadRecord picUploadRecord){
         firebaseDatabaseRef.child(UPLOAD_RECORDS).push().setValue(picUploadRecord);
     }
-
 }
