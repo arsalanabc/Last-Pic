@@ -45,21 +45,23 @@ public class PictureRecordDAO {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         if(dataSnapshot.getValue() == null){
+                            picRecord.setLikes(picRecord.getLikes()+1);
+                            update(picRecord);
+                            Map<String,String> map = new HashMap<>();
+                            map.put(USER_LIKED_PIC, picRecord.getKey());
+                            firebaseDatabaseRef
+                                    .child(LIKES)
+                                    .child(AndroidId.USER_ANDROID_ID).push().setValue(map);
 
-                            for (PicUploadRecord pic: getAll()) {
-//                      Log.d("pic",String.valueOf(pic.getLikes()));
-                                if(pic.getKey() == picRecord.getKey()){
-                                    pic.setLikes(pic.getLikes()+1);
-                                    update(pic);
-                                    Map<String,String> map = new HashMap<>();
-                                    map.put(USER_LIKED_PIC, picRecord.getKey());
-                                    firebaseDatabaseRef
-                                            .child(LIKES)
-                                            .child(AndroidId.USER_ANDROID_ID).push().setValue(map);
-
-                                    imageViewer.showLikeToast();
-                                }
-                            }
+                            imageViewer.showLikeToast();
+                        } else {
+                            picRecord.setLikes(picRecord.getLikes()-1);
+                            update(picRecord);
+                            Map<String,String> map = new HashMap<>();
+                            map.put(USER_LIKED_PIC, picRecord.getKey());
+                            firebaseDatabaseRef
+                                    .child(LIKES)
+                                    .child(AndroidId.USER_ANDROID_ID).removeValue();
                         }
                     }
 
