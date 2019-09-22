@@ -40,28 +40,30 @@ public class PictureRecordDAO {
 
     public void likeAPicture(final PicUploadRecord picRecord){
         firebaseDatabaseRef.child(LIKES).child(AndroidId.USER_ANDROID_ID)
-                .orderByChild(USER_LIKED_PIC).equalTo(picRecord.getKey())
+                .child(picRecord.getKey())
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         if(dataSnapshot.getValue() == null){
                             picRecord.setLikes(picRecord.getLikes()+1);
                             update(picRecord);
-                            Map<String,String> map = new HashMap<>();
-                            map.put(USER_LIKED_PIC, picRecord.getKey());
+
+                            Map<String, Boolean> pictureLiked = new HashMap<>();
+                            pictureLiked.put(USER_LIKED_PIC, true);
+
                             firebaseDatabaseRef
                                     .child(LIKES)
-                                    .child(AndroidId.USER_ANDROID_ID).push().setValue(map);
+                                    .child(AndroidId.USER_ANDROID_ID)
+                                    .child(picRecord.getKey())
+                                    .setValue(pictureLiked);
 
                             imageViewer.showLikeToast();
                         } else {
                             picRecord.setLikes(picRecord.getLikes()-1);
                             update(picRecord);
-                            Map<String,String> map = new HashMap<>();
-                            map.put(USER_LIKED_PIC, picRecord.getKey());
                             firebaseDatabaseRef
                                     .child(LIKES)
-                                    .child(AndroidId.USER_ANDROID_ID).removeValue();
+                                    .child(AndroidId.USER_ANDROID_ID).child(picRecord.getKey()).removeValue();
                         }
                     }
 
