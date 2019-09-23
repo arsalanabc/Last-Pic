@@ -204,17 +204,15 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
     }
 
     public String uploadImage (final Bitmap scaledImage){
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        scaledImage.compress(Bitmap.CompressFormat.JPEG, 80, bytes);
+        ByteArrayOutputStream webpBytes = new ByteArrayOutputStream();
+        scaledImage.compress(Bitmap.CompressFormat.WEBP, 100, webpBytes);
 
-        byte[] data = bytes.toByteArray();
+        byte[] data = webpBytes.toByteArray();
 
         if(data.length != 0){
             StorageReference storageReference = FirebaseStorage.getInstance().getReference();
             StorageReference ref = storageReference.child("pictures/"+ UUID.randomUUID().toString());
 
-
-            Log.d("putBytes", "putting bytes");
             UploadTask uploadTask = ref.putBytes(data);
             uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @RequiresApi(api = Build.VERSION_CODES.O)
