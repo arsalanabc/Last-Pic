@@ -16,6 +16,9 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 
@@ -159,9 +162,7 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
             }
 
             if (scaledBitmap != null) {
-                ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-                scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 80, bytes);
-                uploadImage(bytes);
+                uploadImage(scaledBitmap);
             }
 
         } catch (Exception e) {
@@ -202,7 +203,10 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
         }
     }
 
-    public String uploadImage (ByteArrayOutputStream bytes){
+    public String uploadImage (final Bitmap scaledImage){
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        scaledImage.compress(Bitmap.CompressFormat.JPEG, 80, bytes);
+
         byte[] data = bytes.toByteArray();
 
         if(data.length != 0){
@@ -213,10 +217,11 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
             Log.d("putBytes", "putting bytes");
             UploadTask uploadTask = ref.putBytes(data);
             uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @RequiresApi(api = Build.VERSION_CODES.O)
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     writeToFirebase(taskSnapshot);
-
+                    showUploadToast(scaledImage);
                 }
             })
                     .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
@@ -275,4 +280,20 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
         firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
     }
 
+    private void showUploadToast(Bitmap bmp) {
+        LayoutInflater layoutInflater = activity.getLayoutInflater();
+        final View view = layoutInflater.inflate(R.layout.toast_upload_image,null);
+        ImageView imageView = view.findViewById(R.id.upload_image);
+        imageView.setImageBitmap(bmp);
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast toast = new Toast(activity);
+                toast.setView(view);
+                toast.setDuration(Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        });
+
+    }
 }
