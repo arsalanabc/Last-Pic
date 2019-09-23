@@ -2,6 +2,10 @@
 
 # All notable changes will be log in this file.
 
+## [2.0.1] - 2019-09-22
+### Fixed
+- Handle missing picture records
+
 ## [2.0.0.BETA] - 2019-09-22
 ### Added
 - User can now like and unlike pictures

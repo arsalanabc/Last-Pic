@@ -6,8 +6,8 @@ android {
         applicationId 'com.skeedo.lastpic'
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 3
-        versionName '2.0.0.BETA'
+        versionCode 4
+        versionName '2.0.1.BETA'
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
