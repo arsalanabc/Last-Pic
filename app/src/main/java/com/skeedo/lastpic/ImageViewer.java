@@ -156,11 +156,13 @@ public class ImageViewer extends AppCompatActivity {
 
                                     @Override
                                     public void onDataChange(DataSnapshot pictureSnapshot) {
-                                        PicUploadRecord pic = pictureSnapshot.getValue(PicUploadRecord.class);
-                                        pic.setKey(pictureSnapshot.getKey());
-                                        imageModels.add(pic);
-                                        pictureRecordDAO.add(pic);
-                                        displayImages();
+                                        if(pictureSnapshot.getValue() != null){
+                                            PicUploadRecord pic = pictureSnapshot.getValue(PicUploadRecord.class);
+                                            pic.setKey(pictureSnapshot.getKey());
+                                            imageModels.add(pic);
+                                            pictureRecordDAO.add(pic);
+                                            displayImages();
+                                        }
                                     }
 
                                     @Override
