@@ -16,6 +16,9 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 
@@ -76,8 +79,8 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
 
             int actualHeight = options.outHeight;
             int actualWidth = options.outWidth;
-            float maxHeight = actualHeight * 0.6f; //4032f;
-            float maxWidth =  actualWidth * 0.6f; //4032f;
+            float maxHeight = Math.min(actualHeight, 1080f); //4032f;
+            float maxWidth =  Math.min(actualWidth, 1080f); //4032f;
             float imgRatio = actualWidth / actualHeight;
             float maxRatio = maxWidth / maxHeight;
 
@@ -159,9 +162,7 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
             }
 
             if (scaledBitmap != null) {
-                ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-                scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 70, bytes);
-                uploadImage(bytes);
+                uploadImage(scaledBitmap);
             }
 
         } catch (Exception e) {
@@ -202,40 +203,32 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
         }
     }
 
-    public String uploadImage (ByteArrayOutputStream bytes){
-        byte[] data = bytes.toByteArray();
+    public String uploadImage (final Bitmap scaledImage){
+        ByteArrayOutputStream webpBytes = new ByteArrayOutputStream();
+        scaledImage.compress(Bitmap.CompressFormat.WEBP, 100, webpBytes);
+
+        byte[] data = webpBytes.toByteArray();
 
         if(data.length != 0){
-//            final ProgressDialog progressDialog = new ProgressDialog(activity);
-//            progressDialog.setTitle("Uploading...");
-//            progressDialog.show();
-
             StorageReference storageReference = FirebaseStorage.getInstance().getReference();
             StorageReference ref = storageReference.child("pictures/"+ UUID.randomUUID().toString());
 
-
-            Log.d("putBytes", "putting bytes");
             UploadTask uploadTask = ref.putBytes(data);
             uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @RequiresApi(api = Build.VERSION_CODES.O)
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-//                    progressDialog.dismiss();
-
                     writeToFirebase(taskSnapshot);
-
+                    showUploadToast(scaledImage);
                 }
             })
                     .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                            double progress = (100.0*taskSnapshot.getBytesTransferred()/taskSnapshot
-                                    .getTotalByteCount());
-//                            progressDialog.setMessage("Uploaded "+(int)progress+"%");
                         }
                     }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
-//                    progressDialog.dismiss();
                     Toast.makeText(activity, "Failed "+e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
@@ -269,11 +262,9 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
                 updateTimeStamp.toString());
         myRef.child(newKeyToUploadImage).setValue(picUploadRecord);
 
-        // update the update key for the user
         database.getReference("last_pic").child(AndroidId.USER_ANDROID_ID).setValue(
                 new LastPic(newKeyToUploadImage, updateTimeStamp.getEpochSecond()*-1));
 
-        Toast.makeText(activity, "Your last picture is uploaded!", Toast.LENGTH_SHORT).show();
         Bundle bundle = new Bundle();
         bundle.putString(FirebaseAnalytics.Param.ITEM_ID, AndroidId.USER_ANDROID_ID);
         bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "pic_updates");
@@ -286,4 +277,20 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
         firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
     }
 
+    private void showUploadToast(Bitmap bmp) {
+        LayoutInflater layoutInflater = activity.getLayoutInflater();
+        final View view = layoutInflater.inflate(R.layout.toast_upload_image,null);
+        ImageView imageView = view.findViewById(R.id.upload_image);
+        imageView.setImageBitmap(bmp);
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast toast = new Toast(activity);
+                toast.setView(view);
+                toast.setDuration(Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        });
+
+    }
 }

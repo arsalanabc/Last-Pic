@@ -1,11 +1,12 @@
 package com.skeedo.lastpic.Model.PictureRecord;
 
-import com.skeedo.lastpic.Model.AndroidId;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.skeedo.lastpic.ImageViewer;
+import com.skeedo.lastpic.Model.AndroidId;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,9 +21,11 @@ public class PictureRecordDAO {
     final String LIKES = "likes";
 //    TODO Using an unspecified index. Consider adding '".indexOn": "user_liked_pic"' at likes to your security and Firebase Database rules for better performance
     final String USER_LIKED_PIC = "user_liked_pic";
+    private ImageViewer imageViewer;
 
 
-    public PictureRecordDAO(FirebaseDatabase firebaseDatabase){
+    public PictureRecordDAO(FirebaseDatabase firebaseDatabase, ImageViewer imageViewer){
+        this.imageViewer = imageViewer;
         records = new HashMap<>();
         this.firebaseDatabaseRef = firebaseDatabase.getInstance().getReference();
     }
@@ -35,26 +38,16 @@ public class PictureRecordDAO {
         return new ArrayList<>(records.values());
     }
 
-    public void likeAPicture(final PicUploadRecord picRecord){
+    public void likeOrUnlike(final PicUploadRecord picRecord){
         firebaseDatabaseRef.child(LIKES).child(AndroidId.USER_ANDROID_ID)
-                .orderByChild(USER_LIKED_PIC).equalTo(picRecord.getKey())
+                .child(picRecord.getKey())
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         if(dataSnapshot.getValue() == null){
-
-                            for (PicUploadRecord pic: getAll()) {
-//                      Log.d("pic",String.valueOf(pic.getLikes()));
-                                if(pic.getKey() == picRecord.getKey()){
-                                    pic.setLikes(pic.getLikes()+1);
-                                    update(pic);
-                                    Map<String,String> map = new HashMap<>();
-                                    map.put(USER_LIKED_PIC, picRecord.getKey());
-                                    firebaseDatabaseRef
-                                            .child(LIKES)
-                                            .child(AndroidId.USER_ANDROID_ID).push().setValue(map);
-                                }
-                            }
+                            userActionUpdate("LIKE", picRecord);
+                        } else {
+                            userActionUpdate("UNLIKE", picRecord);
                         }
                     }
 
@@ -71,6 +64,41 @@ public class PictureRecordDAO {
 
     public void save(PicUploadRecord picUploadRecord){
         firebaseDatabaseRef.child(UPLOAD_RECORDS).push().setValue(picUploadRecord);
+    }
+
+    private void userActionUpdate(String action, PicUploadRecord picture) {
+        switch (action){
+            case "UNLIKE":
+            {
+                updateLikes(picture, -1);
+                firebaseDatabaseRef
+                        .child(LIKES)
+                        .child(AndroidId.USER_ANDROID_ID).child(picture.getKey()).removeValue();
+                break;
+            }
+            case "LIKE":
+            {
+                updateLikes(picture, 1);
+                Map<String, Boolean> pictureLiked = new HashMap<>();
+                pictureLiked.put(USER_LIKED_PIC, true);
+
+                firebaseDatabaseRef
+                        .child(LIKES)
+                        .child(AndroidId.USER_ANDROID_ID)
+                        .child(picture.getKey())
+                        .setValue(pictureLiked);
+                break;
+            }
+            default:{
+            }
+        }
+
+        imageViewer.showLikeToast(action);
+    }
+
+    private void updateLikes(PicUploadRecord picRecord, int like) {
+        picRecord.setLikes(picRecord.getLikes() + like);
+        update(picRecord);
     }
 
 }
