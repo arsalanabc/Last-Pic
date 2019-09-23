@@ -265,7 +265,6 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
         database.getReference("last_pic").child(AndroidId.USER_ANDROID_ID).setValue(
                 new LastPic(newKeyToUploadImage, updateTimeStamp.getEpochSecond()*-1));
 
-        Toast.makeText(activity, "Your last picture is uploaded!", Toast.LENGTH_SHORT).show();
         Bundle bundle = new Bundle();
         bundle.putString(FirebaseAnalytics.Param.ITEM_ID, AndroidId.USER_ANDROID_ID);
         bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "pic_updates");

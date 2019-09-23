@@ -2,6 +2,17 @@
 
 # All notable changes will be log in this file.
 
+## [2.0.0.BETA] - 2019-09-22
+### Added
+- User can now like and unlike pictures
+- Liking will float a little heart
+- Unliking will float a broken heart icon
+- Show user their image which gets uploaded in a floating toast
+
+### Changed
+- Use new WEBP format for compression to reduce upload size
+- New simple and cleaning landing page
+
 ## [1.0.1] - 2019-09-21
 ### Changed
 - Compression dimensions fixed
