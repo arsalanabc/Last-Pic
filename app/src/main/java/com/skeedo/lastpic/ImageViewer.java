@@ -39,6 +39,7 @@ import java.util.List;
 public class ImageViewer extends AppCompatActivity implements View.OnTouchListener {
 
     private static final String TAG = "TOUCH";
+    private static final float TOUCH_MOVE_THRESHOLD = 10f;
     private int index = 0;
     private ImageView imageView;
     private DatabaseReference firebaseDatabase;
@@ -62,10 +63,10 @@ public class ImageViewer extends AppCompatActivity implements View.OnTouchListen
     public static final int NONE = 0;
     public static final int DRAG = 1;
     public static final int ZOOM = 2;
+    public static final int CHANGE = 3;
     public static int mode = NONE;
 
     float oldDist;
-    private float[] matrixValues = new float[9];
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -112,7 +113,7 @@ public class ImageViewer extends AppCompatActivity implements View.OnTouchListen
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-
+        Log.d(TAG, "width"+v.getWidth());
         switch (event.getAction() & MotionEvent.ACTION_MASK) {
 
             case MotionEvent.ACTION_DOWN:
@@ -156,6 +157,18 @@ public class ImageViewer extends AppCompatActivity implements View.OnTouchListen
                 break;
 
             case MotionEvent.ACTION_UP:
+                if(Math.abs(event.getX() - start.x) <= TOUCH_MOVE_THRESHOLD && Math.abs(event.getY() - start.y) <= TOUCH_MOVE_THRESHOLD){
+                    mode = CHANGE;
+                    matrix.reset();
+                    if (event.getX() >= getWidth() / 2) {
+                        preloadNextImages();
+                        changeImage(1);
+                    } else {
+                        changeImage(-1);
+                    }
+                }
+                break;
+
             case MotionEvent.ACTION_POINTER_UP:
 
                 mode = NONE;
@@ -163,7 +176,6 @@ public class ImageViewer extends AppCompatActivity implements View.OnTouchListen
                 break;
         }
 
-        // Perform the transformation
         imageView.setImageMatrix(matrix);
 
         return true; // indicate event was handled
@@ -181,7 +193,6 @@ public class ImageViewer extends AppCompatActivity implements View.OnTouchListen
         float y = event.getY(0) + event.getY(1);
         point.set(x / 2, y / 2);
     }
-
 
     public boolean onTouchEventOld(MotionEvent e) {
         // MotionEvent reports input details from the touch screen
