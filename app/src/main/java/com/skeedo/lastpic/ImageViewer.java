@@ -1,7 +1,9 @@
 package com.skeedo.lastpic;
 
+import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.PointF;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -113,11 +115,10 @@ public class ImageViewer extends AppCompatActivity implements View.OnTouchListen
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-        Log.d(TAG, "width"+v.getWidth());
         switch (event.getAction() & MotionEvent.ACTION_MASK) {
 
             case MotionEvent.ACTION_DOWN:
-
+                matrix.set(imageView.getImageMatrix());
                 savedMatrix.set(matrix);
                 start.set(event.getX(), event.getY());
                 Log.d(TAG, "mode=DRAG" );
@@ -159,7 +160,6 @@ public class ImageViewer extends AppCompatActivity implements View.OnTouchListen
             case MotionEvent.ACTION_UP:
                 if(Math.abs(event.getX() - start.x) <= TOUCH_MOVE_THRESHOLD && Math.abs(event.getY() - start.y) <= TOUCH_MOVE_THRESHOLD){
                     mode = CHANGE;
-                    matrix.reset();
                     if (event.getX() >= getWidth() / 2) {
                         preloadNextImages();
                         changeImage(1);
@@ -218,6 +218,10 @@ public class ImageViewer extends AppCompatActivity implements View.OnTouchListen
 
     public float getWidth(){
         return this.getWindowManager().getDefaultDisplay().getWidth();
+    }
+
+    public float getHeight(){
+        return this.getWindowManager().getDefaultDisplay().getHeight();
     }
 
     public void changeImage(int ind){
@@ -303,11 +307,33 @@ public class ImageViewer extends AppCompatActivity implements View.OnTouchListen
 
                     @Override
                     public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                        Bitmap loadedBitmap = ((BitmapDrawable) resource).getBitmap();
+                        imageView.setImageMatrix(calcMatrix(loadedBitmap.getWidth(),loadedBitmap.getHeight()));
                         progressBar.setVisibility(View.GONE);
                         return false;
                     }
                 })
                 .into(imageView);
+    }
+
+    private Matrix calcMatrix(int actualWidth, int actualHeight) {
+        Matrix matrix = new Matrix();
+
+        float maxHeight = getHeight();
+        float maxWidth = getWidth();
+        float widthRatio = maxWidth / actualWidth;
+        float heightRatio = maxHeight / actualHeight;
+
+        if (actualHeight > maxHeight || actualWidth > maxWidth) {
+            float newScaledFactor = Math.min(widthRatio, heightRatio);
+            float transformedX = Math.abs(newScaledFactor * actualWidth - maxWidth)/2;
+            float transformedY = Math.abs(newScaledFactor * actualHeight - maxHeight)/2;
+
+            matrix.setScale(newScaledFactor, newScaledFactor);
+            matrix.postTranslate(transformedX, transformedY);
+        }
+
+        return matrix;
     }
 
     public void showLikeToast(String action) {
