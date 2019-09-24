@@ -1,9 +1,12 @@
 package com.skeedo.lastpic;
 
+import android.graphics.Matrix;
+import android.graphics.PointF;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -33,8 +36,9 @@ import com.skeedo.lastpic.Model.PictureRecord.PictureRecordDAO;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ImageViewer extends AppCompatActivity {
+public class ImageViewer extends AppCompatActivity implements View.OnTouchListener {
 
+    private static final String TAG = "TOUCH";
     private int index = 0;
     private ImageView imageView;
     private DatabaseReference firebaseDatabase;
@@ -49,6 +53,20 @@ public class ImageViewer extends AppCompatActivity {
     private TextView likesTextView;
     private PictureRecordDAO pictureRecordDAO;
 
+    Matrix matrix = new Matrix();
+    Matrix savedMatrix = new Matrix();
+    PointF start = new  PointF();
+    public static PointF mid = new PointF();
+
+    // We can be in one of these 3 states
+    public static final int NONE = 0;
+    public static final int DRAG = 1;
+    public static final int ZOOM = 2;
+    public static int mode = NONE;
+
+    float oldDist;
+    private float[] matrixValues = new float[9];
+
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -59,6 +77,7 @@ public class ImageViewer extends AppCompatActivity {
         hideBar();
         setContentView(R.layout.image_viewer);
         imageView = findViewById(R.id.imageview);
+        imageView.setOnTouchListener(this);
         progressBar = (ProgressBar) findViewById(R.id.progress);
         likesTextView = findViewById(R.id.likes);
         pictureRecordDAO = new PictureRecordDAO(firebaseDatabase.getDatabase(), this);
@@ -92,7 +111,79 @@ public class ImageViewer extends AppCompatActivity {
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent e) {
+    public boolean onTouch(View v, MotionEvent event) {
+
+        switch (event.getAction() & MotionEvent.ACTION_MASK) {
+
+            case MotionEvent.ACTION_DOWN:
+
+                savedMatrix.set(matrix);
+                start.set(event.getX(), event.getY());
+                Log.d(TAG, "mode=DRAG" );
+                mode = DRAG;
+                break;
+
+            case MotionEvent.ACTION_POINTER_DOWN:
+
+                oldDist = spacing(event);
+                Log.d(TAG, "oldDist=" + oldDist);
+                if (oldDist > 10f) {
+
+                    savedMatrix.set(matrix);
+                    midPoint(mid, event);
+                    mode = ZOOM;
+                    Log.d(TAG, "mode=ZOOM");
+                }
+                break;
+
+            case MotionEvent.ACTION_MOVE:
+
+                if (mode == DRAG) {
+
+                    matrix.set(savedMatrix);
+                    matrix.postTranslate(event.getX() - start.x, event.getY() - start.y);
+                } else if (mode == ZOOM) {
+
+                    float newDist = spacing(event);
+                    Log.d(TAG, "newDist=" + newDist);
+                    if (newDist > 10f) {
+
+                        matrix.set(savedMatrix);
+                        float scale = newDist / oldDist;
+                        matrix.postScale(scale, scale, mid.x, mid.y);
+                    }
+                }
+                break;
+
+            case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_POINTER_UP:
+
+                mode = NONE;
+                Log.d(TAG, "mode=NONE");
+                break;
+        }
+
+        // Perform the transformation
+        imageView.setImageMatrix(matrix);
+
+        return true; // indicate event was handled
+    }
+
+    private float spacing(MotionEvent event) {
+        float x = event.getX(0) - event.getX(1);
+        float y = event.getY(0) - event.getY(1);
+        return (float) Math.sqrt(x * x + y * y);
+    }
+
+    private void midPoint(PointF point, MotionEvent event) {
+
+        float x = event.getX(0) + event.getX(1);
+        float y = event.getY(0) + event.getY(1);
+        point.set(x / 2, y / 2);
+    }
+
+
+    public boolean onTouchEventOld(MotionEvent e) {
         // MotionEvent reports input details from the touch screen
         // and other input controls. In this case, you are only
         // interested in events where the touch position changed.
@@ -222,4 +313,5 @@ public class ImageViewer extends AppCompatActivity {
         toast.setDuration(Toast.LENGTH_SHORT);
         toast.show();
     }
+
 }
