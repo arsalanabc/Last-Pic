@@ -49,7 +49,7 @@ public class ImageUploader extends AsyncTask <Uri, Integer , String> {
     Activity activity;
     private FirebaseAnalytics firebaseAnalytics;
 
-    ImageUploader(String filePath, Activity activity, FirebaseAnalytics firebaseAnalytics){
+    public ImageUploader(String filePath, Activity activity, FirebaseAnalytics firebaseAnalytics){
         this.filePath = filePath;
         this.activity = activity;
         this.firebaseAnalytics = firebaseAnalytics;

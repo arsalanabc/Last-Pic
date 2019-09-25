@@ -33,7 +33,7 @@
         <activity android:name="com.skeedo.lastpic.UploadActivity">
         </activity>
 
-        <activity android:name="com.skeedo.lastpic.Activities.SlidingActivity">
+        <activity android:name="com.skeedo.lastpic.Activities.FirstUploadActivity">
         </activity>
 
     </application>

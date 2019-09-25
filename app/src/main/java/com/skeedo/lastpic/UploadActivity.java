@@ -9,11 +9,9 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.skeedo.lastpic.Managers.ConnectionManager;
-import com.skeedo.lastpic.Model.AndroidId;
-import com.skeedo.lastpic.Model.PictureRecord.PicUploadRecord;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -23,6 +21,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.skeedo.lastpic.Activities.FirstUploadActivity;
+import com.skeedo.lastpic.Managers.ConnectionManager;
+import com.skeedo.lastpic.Managers.PreferenceManager;
+import com.skeedo.lastpic.Model.AndroidId;
+import com.skeedo.lastpic.Model.PictureRecord.PicUploadRecord;
 
 import java.io.File;
 
@@ -31,6 +34,7 @@ public class UploadActivity extends Activity {
     private FirebaseAnalytics mFirebaseAnalytics;
     private DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
     private Tracker mTracker;
+    ProgressBar progressBar;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -40,6 +44,8 @@ public class UploadActivity extends Activity {
         this.setContentView(R.layout.upload_activity);
         TextView textView = findViewById(R.id.warning);
         Button closeButton = findViewById(R.id.app_close_btn);
+        progressBar = new ProgressBar(this);
+        progressBar.setVisibility(ProgressBar.VISIBLE);
         closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -70,9 +76,24 @@ public class UploadActivity extends Activity {
                 // we have found the latest picture in the public folder, do whatever you want
                 ConnectionManager connectionManager = new ConnectionManager(this);
                 if(connectionManager.isConnected()){
-                checkIfImageNeedsToBeUpdated(imagePath);
-                startActivity(new Intent(this, ImageViewer.class));}
+
+                    PreferenceManager preferenceManager = new PreferenceManager(this);
+                    if(preferenceManager.FirstLaunch()){
+
+                        Intent showUploadingImage = new Intent(UploadActivity.this, FirstUploadActivity.class);
+                        showUploadingImage.putExtra("imagePath", imagePath);
+                        startActivity(showUploadingImage);
+
+                        killThisActivity();
+
+                    } else {
+                        checkIfImageNeedsToBeUpdated(imagePath);
+                        startActivity(new Intent(this, ImageViewer.class));
+                    }
+                }
                 else{
+                    closeButton.setVisibility(Button.VISIBLE);
+                    progressBar.setVisibility(ProgressBar.GONE);
                     textView.setText("No Internet Connection!");
                 }
                 break;
@@ -105,7 +126,7 @@ public class UploadActivity extends Activity {
                             ){
                                 updateImage(currentImagePath);
                             } else {
-                                noUpdateNeeded();
+                                killThisActivity();
                             }
                         }
 
@@ -124,15 +145,15 @@ public class UploadActivity extends Activity {
         });
     }
 
-    private void noUpdateNeeded() {
+    private void killThisActivity() {
         sendToGoogleAnalytics("NO_UPLOAD_NEEDED");
         closeApp();
     }
 
     private void updateImage(String imagePath) {
         sendToGoogleAnalytics("UPLOAD_NEEDED");
-        ImageUploader imageUploader = new ImageUploader(imagePath, this, mFirebaseAnalytics);
-        imageUploader.execute(Uri.fromFile(new File(imagePath)));
+            ImageUploader imageUploader = new ImageUploader(imagePath, this, mFirebaseAnalytics);
+            imageUploader.execute(Uri.fromFile(new File(imagePath)));
     }
 
     public void sendToGoogleAnalytics (String label){
@@ -142,5 +163,4 @@ public class UploadActivity extends Activity {
                 .setLabel(label)
                 .build());
     }
-
 }

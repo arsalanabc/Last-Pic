@@ -15,5 +15,12 @@
         android:text="@string/close"
         android:layout_below="@id/warning"
         android:layout_centerInParent="true"
-        android:id="@+id/app_close_btn"/>
+        android:id="@+id/app_close_btn"
+        android:visibility="invisible"/>
+
+    <ProgressBar
+        android:id="@+id/progressBar2"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 </RelativeLayout>

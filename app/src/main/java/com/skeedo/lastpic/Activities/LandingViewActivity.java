@@ -5,11 +5,11 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-
-import com.skeedo.lastpic.AnalyticsApplication;
-import com.skeedo.lastpic.R;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
+import com.skeedo.lastpic.AnalyticsApplication;
+import com.skeedo.lastpic.MainActivity;
+import com.skeedo.lastpic.R;
 
 public class LandingViewActivity extends AppCompatActivity {
 
@@ -34,7 +34,7 @@ public class LandingViewActivity extends AppCompatActivity {
             public void run() {
                 try {
                     sleep(1200);
-                    Intent intent = new Intent(getApplicationContext(), SlidingActivity.class);
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                     startActivity(intent);
                     finish();
                 } catch (InterruptedException e) {
